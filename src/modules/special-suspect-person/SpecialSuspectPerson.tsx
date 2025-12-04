@@ -1,0 +1,468 @@
+import React, { useState, useEffect, useRef } from "react"
+import { PopupMessage, PopupMessageWithCancel } from "../../utils/popupMessage"
+import { useSelector } from "react-redux"
+import { RootState } from "../../app/store"
+import { SelectChangeEvent } from '@mui/material/Select'
+import dayjs from 'dayjs'
+import buddhistEra from 'dayjs/plugin/buddhistEra'
+
+// Icon
+import { Icon } from '../../components/icons/Icon'
+import { Pencil, Trash2, Plus, Upload } from 'lucide-react'
+
+// Types
+import {
+  SuspectPeopleRespondsDetail,
+  SuspectPeopleData,
+} from '../../features/suspect-people/SuspectPeopleDataTypes'
+import { FilterSpecialPeople } from "../../features/types"
+import { DeleteRequestData, FileDelete } from "../../features/file-upload/fileUploadTypes"
+
+ // Context
+import { useHamburger } from "../../context/HamburgerContext"
+
+// Component
+import Loading from "../../components/loading/Loading"
+import SearchFilter from "./search-filter/SearchFilter"
+import PaginationComponent from "../../components/pagination/Pagination"
+
+// Modules
+import ManageSpecialSuspectPerson from "./manage-special-suspect-person/ManageSpecialSuspectPerson"
+import UploadFile from "./upload-file/UploadFile"
+
+// Constant
+import { SUSPECT_PEOPLE_ROW_PER_PAGES } from "../../constants/dropdown"
+
+// Config
+import { getUrls } from '../../config/runtimeConfig';
+
+// Utils
+import { formatNumber } from "../../utils/commonFunction";
+import { fetchClient, combineURL } from "../../utils/fetchClient";
+
+// i18n
+import { useTranslation } from "react-i18next";
+
+dayjs.extend(buddhistEra)
+
+function SpecialSuspectPerson() {
+  // i18n
+  const { i18n } = useTranslation();
+
+  const { specialSuspectPeopleData } = useSelector(
+    (state: RootState) => state.suspectPeopleData
+  )
+
+  const [isAddSuspectPersonOpen, setIsAddSuspectPersonOpen] = useState(false)
+  const [isFileImportOpen, setIsFileImportOpen] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [isSearch, setIsSearch] = useState(false)
+  const [specialSuspectPeopleList, setSpecialSuspectPeopleList] = useState<SuspectPeopleRespondsDetail[]>([])
+  const [selectedRow, setSelectedRow] = useState<SuspectPeopleRespondsDetail | null>(null)
+  const { isOpen } = useHamburger()
+  const [isLoading, setIsLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const [pageInput, setPageInput] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(SUSPECT_PEOPLE_ROW_PER_PAGES[SUSPECT_PEOPLE_ROW_PER_PAGES.length - 1])
+  const [rowsPerPageOptions] = useState(SUSPECT_PEOPLE_ROW_PER_PAGES)
+  const [isFileImportClose, setIsFileImportClose] = useState(false)
+  const tableDataRef = useRef<HTMLDivElement>(null)
+  const { IMAGE_URL, API_URL } = getUrls();
+
+  const { dataStatus, personTypes, prefix } = useSelector(
+    (state: RootState) => state.dropdownData
+  )
+
+  useEffect(() => {
+    if (tableDataRef.current) {
+      tableDataRef.current.scrollTop = 0;
+    }
+  }, [specialSuspectPeopleList])
+
+  const handleEditClick = (item: SuspectPeopleRespondsDetail) => {
+    setSelectedRow(item)
+    setIsAddSuspectPersonOpen(true)
+    setIsEditMode(true)
+  }
+
+  const handleAddClick = () => {
+    setIsEditMode(false)
+    setIsAddSuspectPersonOpen(true)
+  }
+
+  const deleteFileUpload = async (deleteFile: DeleteRequestData) => {
+    try {
+      await fetchClient<FileDelete>(combineURL(API_URL, "/upload/remove"), {
+        method: "POST",
+        headers: { 
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(deleteFile),
+      })
+    }
+    catch (error) {
+      PopupMessage("ลบข้อมูลไม่สำเร็จ", "ไม่สามารถลบไฟล์ได้", "error")
+    }
+  }
+
+  const handleDeleteClick = async (uid: string) => {
+    const confirmed = await PopupMessageWithCancel("ยันยันการลบ", "คุณต้องการดำเนินการต่อใช่หรือไม่?", "ยืนยัน", "ยกเลิก", "warning", "#b91c1c")
+            
+    if (confirmed) {
+      try {
+
+        const deleteData = specialSuspectPeopleList.find((data) => data.uid === uid)
+        if (deleteData?.watchlist_images && deleteData?.watchlist_images.length > 0) {
+          deleteData?.watchlist_images.map(async (row) => {
+            const deleteFile: DeleteRequestData = {
+              url: row.url
+            }
+
+            await deleteFileUpload(deleteFile)
+          })
+        }
+
+        if (deleteData?.watchlist_files && deleteData?.watchlist_files.length > 0) {
+          deleteData?.watchlist_files.map(async (row) => {
+            const deleteFile: DeleteRequestData = {
+              url: row.url
+            }
+
+            await deleteFileUpload(deleteFile)
+          })
+        }
+
+        await fetchClient<void>(
+          combineURL(API_URL, `/watchlist/delete`),
+          {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ uid: uid })
+          }
+        )
+        // PopupMessage("ลบข้อมูลสำเร็จ", "บันทึกข้อมูลสำเร็จ", 'success')
+        await fetchSpecialSuspectPeopleData(page.toString(), rowsPerPage.toString())
+      } 
+      catch (error) {
+        PopupMessage("ลบข้อมูลไม่สำเร็จ", "ข้อมูลไม่สามารถลบได้", "error")
+      }
+    }
+  }
+
+  const setFilterData = async (filterData: FilterSpecialPeople) => {
+    setIsLoading(true)
+    setIsSearch(true)
+    const {
+      selectedNamePrefix,
+      firstname,
+      lastname,
+      selectedPersonType,
+      agency,
+      selectedStatus,
+    } = filterData
+  
+    if (
+      !selectedNamePrefix &&
+      !firstname &&
+      !lastname &&
+      !selectedPersonType &&
+      !agency &&
+      (selectedStatus === undefined || selectedStatus === 2)
+    ) {
+      await fetchSpecialSuspectPeopleData('1', rowsPerPage.toString())
+      return
+    }
+
+    let filter = []
+
+    if (selectedNamePrefix) {
+      filter.push(`title_id:${selectedNamePrefix}`)
+    }
+    if (selectedStatus !== undefined && selectedStatus !== 2) {
+      filter.push(`active:${selectedStatus === 1 ? true : false}`)
+    }
+    if (firstname) {
+      filter.push(`firstname:${firstname}`)
+    }
+    if (selectedPersonType) {
+      filter.push(`person_class_id:${selectedPersonType}`)
+    }
+    if (lastname) {
+      filter.push(`lastname:${lastname}`)
+    }
+    if (agency) {
+      filter.push(`case_owner_agency:${agency}`)
+    }
+    await fetchSpecialSuspectPeopleData('1', rowsPerPage.toString(), filter)
+  }
+
+  const fetchSpecialSuspectPeopleData = async (page: string, limit: string, filter?:string[]) => {
+    const allFilter = filter ? ["deleted:false", ...filter] : ["deleted:false"]
+    const query: Record<string, string> = {
+      "filter": allFilter.join(","),
+      "page": page,
+      "limit": limit,
+    }
+    setIsLoading(true)
+    try {
+      const response = await fetchClient<SuspectPeopleData>(combineURL(API_URL, "/watchlist/get"), {
+        method: "GET",
+        queryParams: query,
+      });
+
+      if (response.data) {
+        setSpecialSuspectPeopleList(response.data)
+        if (response.countAll) {
+          setTotalPages(Math.ceil(response.countAll / rowsPerPage))
+        }
+      }
+    }
+    catch (error) {
+      setSpecialSuspectPeopleList([]);
+      setTotalPages(1);
+    }
+    finally {
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 500)
+    }
+  }
+
+  useEffect(() => {
+    setIsLoading(false)
+  }, [specialSuspectPeopleList])
+
+  useEffect(() => {
+    fetchSpecialSuspectPeopleData('1', rowsPerPage.toString())
+  }, [])
+
+  useEffect(() => {
+    if (!isAddSuspectPersonOpen) {
+      fetchSpecialSuspectPeopleData('1', rowsPerPage.toString())
+    }
+  }, [isAddSuspectPersonOpen])
+
+  useEffect(() => {
+    if (!isFileImportOpen) {
+      fetchSpecialSuspectPeopleData('1', rowsPerPage.toString())
+    }
+  }, [isFileImportOpen])
+
+  const handlePageChange = async (event: React.ChangeEvent<unknown>, value: number) => {
+    event.preventDefault()
+    setPage(value)
+    await fetchSpecialSuspectPeopleData(value.toString(), rowsPerPage.toString())
+  }
+
+  const handleRowsPerPageChange = async (event: SelectChangeEvent) => {
+    setRowsPerPage(parseInt(event.target.value))
+    await fetchSpecialSuspectPeopleData(page.toString(), event.target.value)
+  }
+
+  const handlePageInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target.value
+    const cleaned = input.replace(/\D/g, '')
+
+    if (cleaned) {
+      const numberInput = Number(cleaned)
+      if (numberInput > 0 && numberInput <= totalPages) {
+        setPageInput(numberInput)
+      }
+    }
+    else if (cleaned === "") {
+      setPageInput(1)
+    }
+    return cleaned
+  }
+
+  const handlePageInputKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+  
+      setIsLoading(true)
+      setPage(pageInput)
+  
+      await fetchSpecialSuspectPeopleData(pageInput.toString(), rowsPerPage.toString())
+    }
+  }
+
+  const handleFileImportOpen = () => {
+    setIsFileImportOpen(true)
+    setIsFileImportClose(false)
+  }
+
+  return (
+    <div className={`main-content pe-3 ${isOpen ? "pl-[130px]" : "pl-[10px]"} transition-all duration-500`}>
+      {isLoading && <Loading />}
+      <div id="extra-registration" className="grid grid-cols-[1fr_260px] gap-2">
+        <div className="min-w-0">
+          <div id="head" className="flex h-[50px] justify-between">
+            <div className="flex flex-col">
+              <p className="text-[20px] text-white">รายการบุคคลต้องสงสัย</p>
+              <p className="text-[14px] text-white">{`จำนวน ${formatNumber(specialSuspectPeopleData?.countAll ?? 0)} รายการ`}</p>
+            </div>
+            <div className="flex items-end space-x-2">
+              <button 
+                type="button" 
+                className="flex justify-center items-center bg-white text-dodgerBlue w-[120px] h-[35px] rounded hover:bg-slate-200"
+                onClick={handleFileImportOpen}
+              >
+                <Icon icon={Upload} size={20} color="dodgerBlue" />
+                <span className="ml-[8px] text-[15px]">นำเข้าข้อมูล</span>
+              </button>
+              <button 
+                type="button" 
+                className="flex justify-center items-center bg-dodgerBlue text-white w-[170px] h-[35px] rounded hover:bg-sky-400"
+                onClick={handleAddClick}
+              >
+                <Icon icon={Plus} size={20} color="#FFFFFF" />
+                <span className="ml-[8px] text-[15px]">เพิ่มบุคคลต้องสงสัย</span>
+              </button>
+            </div>
+          </div>
+          <div id="body" className="mt-[5px] flex flex-col">
+            <div className="flex-1 overflow-x-auto">
+              <div 
+                id="table-data" 
+                className="mt-[10px] overflow-y-auto h-[78vh]"
+                ref={tableDataRef}
+              >
+                <div className="">
+                  <table className="w-full text-[15px]">
+                    <thead className="sticky top-0 z-10 bg-swamp backdrop-blur-md bg-opacity-80">
+                      <tr className="h-[50px] bg-swamp border-none">
+                        <th className="text-center text-white">คำนำหน้า</th>
+                        <th className="text-center text-white">ชื่อ-นามสกุล</th>
+                        <th className="text-center text-white">รูป</th>
+                        <th className="text-center text-white">กลุ่มบุคคล</th>
+                        <th className="text-center text-white">วันที่เพิ่ม</th>
+                        <th className="text-center text-white">วันที่แก้ไข</th>
+                        <th className="text-center text-white">เจ้าของข้อมูล</th>
+                        <th className="text-center text-white">หน่วยงาน</th>
+                        <th className="text-center text-white">สถานะ</th>
+                        <th className="w-[120px] text-center text-white"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-white">
+                      {
+                        specialSuspectPeopleList && specialSuspectPeopleList.length > 0 ? 
+                        specialSuspectPeopleList.map((item) => (
+                          <tr key={item.id} className="h-[80px] border-b-[1px] border-dashed border-darkGray">
+                            <td className="pl-[10px] w-[100px] text-center bg-celtic">
+                              {  
+                                prefix?.data?.find((row) => row.id === item.title_id)?.title_th
+                              }
+                            </td>
+                            <td className="pl-[10px] w-[280px] text-start bg-tuna">
+                              {  
+                                item.firstname + " " + item.lastname
+                              }
+                            </td>
+                            <td className="text-center bg-celtic w-[200px]">
+                              {
+                                Array.isArray(item.watchlist_images) && item.watchlist_images.length > 0 ? 
+                                (
+                                  <div>
+                                    {
+                                      item.watchlist_images.map((image, index) => (
+                                        <img key={index} src={`${IMAGE_URL}${image.url}`} alt={`image-${index}`} className="inline-flex items-center justify-center align-middle h-[70px] w-[60px]" />
+                                      ))
+                                    }
+                                  </div>
+                                ) : 
+                                (
+                                  <p>--</p>
+                                )
+                              }
+                            </td>
+                            <td className="text-start bg-tuna">
+                              {
+                                <p className="pl-[10px]">{personTypes?.data?.find((row) => row.id === item.person_class_id)?.title_en}</p>
+                              }
+                            </td>
+                            <td className="text-center bg-celtic">{ dayjs(item.createdAt).format(i18n.language === "th" ? 'DD/MM/BBBB' : 'DD/MM/YYYY') }</td>
+                            <td className="text-center bg-tuna">{ dayjs(item.updatedAt).format(i18n.language === "th" ? 'DD/MM/BBBB' : 'DD/MM/YYYY') }</td>
+                            <td className="text-center w-[200px] bg-celtic">
+                              {
+                                item.case_owner_agency === "" ? "ไม่ระบุตัวตน" : item.case_owner_agency
+                              }
+                            </td>
+                            <td className="text-center bg-tuna">
+                              {
+                                item.case_owner_agency
+                              }
+                            </td>
+                            <td className="bg-celtic align-middle text-center">
+                              <label 
+                                className={`w-[80px] h-[30px] inline-flex items-center justify-center align-middle rounded
+                                  ${
+                                    item.active
+                                      ? "bg-fruitSalad" 
+                                      : "bg-nobel"
+                                  }`}
+                              >
+                                {
+                                  dataStatus.find((row) => row.id === (item.active ? 1 : 0))?.status
+                                }
+                              </label>
+                            </td>
+                            <td className="text-center bg-tuna">
+                              <button className="mr-[10px]" onClick={() => handleEditClick(item)}>
+                                <Icon icon={Pencil} size={20} color="#FFFFFF" />
+                              </button>
+                              <button onClick={() => handleDeleteClick(item.uid)}>
+                                <Icon icon={Trash2} size={20} color="#FFFFFF" />
+                              </button>
+                            </td>
+                          </tr>
+                        )) : 
+                        !isLoading && isSearch && (
+                          <tr className="h-[50px] w-full border-b-[1px] border-dashed border-darkGray">
+                            <td colSpan={10} className="text-center bg-tuna">ไม่มีข้อมูล</td>
+                          </tr>
+                        )
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={`${specialSuspectPeopleList.length > 0 ? "flex" : "hidden"} items-center justify-between bg-[var(--background-color)] py-3 px-1 sticky bottom-0`}>
+            <PaginationComponent 
+              page={page} 
+              onChange={handlePageChange}
+              rowsPerPage={rowsPerPage}
+              rowsPerPageOptions={rowsPerPageOptions}
+              handleRowsPerPageChange={handleRowsPerPageChange}
+              totalPages={totalPages}
+              pageInput={pageInput.toString()}
+              handlePageInputKeyDown={handlePageInputKeyDown}
+              handlePageInputChange={handlePageInputChange}
+            />
+          </div>
+        </div>
+        <div id="search-filter" className="w-[270px] fixed right-0 top-0 z-20 pt-[80px] h-full">
+          <SearchFilter 
+            setFilterData={setFilterData}
+          />
+        </div>
+        <ManageSpecialSuspectPerson 
+          open={isAddSuspectPersonOpen}
+          closeDialog={() => setIsAddSuspectPersonOpen(false)} 
+          selectedRow={selectedRow}
+          isEditMode={isEditMode}
+        />
+        {/* Import File */}
+        <UploadFile 
+          open={isFileImportOpen} 
+          closeDialog={() => setIsFileImportOpen(false)} 
+          isFileImportClose={isFileImportClose} 
+        />
+      </div>
+    </div>
+  )
+}
+
+export default SpecialSuspectPerson

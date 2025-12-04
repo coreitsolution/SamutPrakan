@@ -1,0 +1,179 @@
+import { LastRecognitionData, VehicleCountData, SystemStatusData, ConnectionResult } from "../features/live-view-real-time/liveViewRealTimeTypes"
+
+export const lastRecognitionData: LastRecognitionData[] = Array.from({ length: 50 }).map((_, i) => ({
+  id: i + 1,
+  camera_info: {
+    id: 1,
+    camera_name: "cam-106",
+  },
+  epoch_start: "2024-11-14T15:44:41.000Z",
+  epoch_end: "2024-11-14T15:44:41.000Z",
+  camera_id: 10000001,
+  camera_name: "10000001",
+  plate: "9กฐ22222",
+  plate_confidence: "94.24",
+  gps_latitude: 18.55,
+  gps_longitude: 10.44,
+  is_special_plate: i % 2 === 0,
+  plate_image_url: "/lpr_images/2024-12-06/plate_images/20241206-135555.8IhJ9lKGAUWbggPO_plate.jpg",
+  region_info: {
+    id: 1,
+    name_th: "กรุงเทพ",
+    name: "Bangkok",
+  },
+  vehicle_body_type: "motorcycle",
+  vehicle_body_type_info: {
+    id: 5,
+    body_type: "motorcycle",
+    body_type_th: "รถจักรยานยนต์ส่วนบุคคล",
+    body_type_en: "Motorcycle",
+  },
+  vehicle_color: "white",
+  vehicle_color_info: {
+    id: 11,
+    color: "white",
+    color_th: "ขาว",
+    color_en: "White",
+  },
+  vehicle_image_url: "/lpr_images/2024-12-06/vehicle_images/20241206-135555.8IhJ9lKGAUWbggPO_vehicle.jpg",
+  vehicle_make: "honda",
+  vehicle_make_info: {
+    id: 56,
+    make: "honda",
+    make_en: "Honda",
+  },
+  vehicle_make_model: "bmw_3-series",
+  vehicle_model_info: {
+    id: 82,
+    make: "bmw",
+    model: "bmw_3-series",
+    model_en: "BMW 3 Series",
+  },
+  special_plate_id: 11,
+  special_plate: {
+    id: 11,
+    plate_group: "1กศ",
+    plate_number: "1270",
+    province_code: "20",
+    plate_class_id: 3,
+    case_number: "5555555",
+    arrest_warrant_date: "2024-12-20",
+    arrest_warrant_expire_date: "2025-12-31",
+    behavior: "-",
+    case_owner_name: "นาย สมมุต",
+    case_owner_agency: "หน่วยงานที่ 1",
+    case_owner_phone: "081-111-1111",
+    visible: true,
+    active: true,
+    deleted: true,
+    deleted_by_id: 0,
+    createdAt: "2024-12-20T04:34:16.000Z",
+    updatedAt: "2025-01-08T09:46:17.000Z",
+    deletedAt: "2025-01-08T09:46:17.000Z",
+    plate_class_info: {
+      id: 3,
+      title_en: "Blacklist",
+      title_th: "บุคคลเฝ้าระวัง",
+      visible: true,
+      active: true,
+    },
+  },
+  map: [
+    { lat: 13.7211, lng: 100.5287 }, // Sathorn
+    { lat: 13.726, lng: 100.535 }, // Lumpini Park
+    { lat: 13.7377, lng: 100.5521 }, // Asok Intersection
+    { lat: 13.7448, lng: 100.5665 }, // Thonglor
+    { lat: 13.7489, lng: 100.5778 }, // Ekkamai
+    { lat: 13.7425, lng: 100.6013 }, // Phra Khanong
+    { lat: 13.7279, lng: 100.6116 }, // On Nut
+    { lat: 13.7212, lng: 100.6303 }, // Bang Na
+    { lat: 13.7026, lng: 100.6455 }, // Srinagarindra
+    { lat: 13.6924, lng: 100.6803 }, // King Rama IX Park
+    { lat: 13.677, lng: 100.6931 }, // Near Seacon Square
+    { lat: 13.6687, lng: 100.7285 }, // Lat Krabang Road
+    { lat: 13.7246, lng: 100.7809 }, // Near Suvarnabhumi Airport (Lat Krabang Area)
+  ],
+  directionDetail: [
+    { direction: "NSB 4_ขก_บ้านไผ่_ออก", dateTime: "10/10/2567 (12:00:00)" },
+    { direction: "NSB 3_บัวลายหนองแวง_ออก", dateTime: "10/10/2567 (12:00:00)" },
+    { direction: "NSB 3_โคกกรวด_ออก_1", dateTime: "10/10/2567 (12:00:00)" },
+    { direction: "NSB 2_ฉช_สภแสนภูดาษ_เข้า", dateTime: "10/10/2567 (12:00:00)" },
+  ]
+}));
+
+
+export const vehicleCountData: VehicleCountData = 
+{ 
+  startHour: "28/06/2024 (07:00)", 
+  endHour: "28/06/2024 (08:00)", 
+  normalPlateCount: 0,
+  specialPlateCount: 0,
+  totalCount: 0,
+}
+
+export const vehicleCountListFullData: VehicleCountData[] = Array.from(
+  {length: 30}, 
+  (_, index) => ({ 
+    id: index + 1, 
+    startHour: "28/06/2024 (07:00)", 
+    endHour: "28/06/2024 (08:00)", 
+    normalPlateCount: 0,
+    specialPlateCount: index,
+    totalCount: index,
+  }
+))
+
+export const systemStatusData: SystemStatusData = 
+{ 
+  "id": 1,
+  "log_timestamp": "2025-12-04T07:23:04.241Z",
+  "log_level": "info",
+  "category": "LPR Data",
+  "status": "success",
+  "details": "New plate found: ชอ368 กรุงเทพมหานคร 99.00%",
+  "created_at": "2024-12-23T14:36:57.000Z",
+  "updated_at": "2024-12-23T14:36:57.000Z"
+}
+
+export const systemStatusListFullData: SystemStatusData[] = Array.from(
+  {length: 10}, 
+  (_, index) => ({ 
+    "id": index + 1,
+    "log_timestamp": "2025-12-04T07:23:04.241Z",
+  /* The `log_level`, `category`, and `status` fields in the `systemStatusData` and
+  `systemStatusListFullData` objects are providing information about the log entry related to
+  License Plate Recognition (LPR) data. */
+    "log_level": "info",
+    "category": "LPR Data",
+    "status": "success",
+    "details": "New plate found: ชอ368 กรุงเทพมหานคร 99.00%",
+    "created_at": "2024-12-23T14:36:57.000Z",
+    "updated_at": "2024-12-23T14:36:57.000Z" 
+  }
+))
+
+export const connectionData: ConnectionResult = 
+{ 
+  id: 0, 
+  sendingTime: "28/06/2024 (18:30:00)", 
+  ipServer: "190.168.0.199", 
+  port: 20,
+  host: 199,
+  sendCompleted: 12500,
+  pending: 4500,
+  status: 1
+}
+
+export const connectionListFullData: ConnectionResult[] = Array.from(
+  {length: 10}, 
+  (_, index) => ({ 
+    id: index + 1,
+    sendingTime: "28/06/2024 (18:30:00)", 
+    ipServer: "190.168.0.199", 
+    port: 20,
+    host: 199,
+    sendCompleted: 12500,
+    pending: 4500,
+    status: index % 2 === 0 ? index === 5 ? 3 : 1 : 2
+  }
+))

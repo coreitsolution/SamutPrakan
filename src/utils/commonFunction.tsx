@@ -1,0 +1,142 @@
+import bcrypt from 'bcryptjs';
+
+// Types
+import { Option } from '../features/types';
+
+// Constants
+const SALT_ROUNDS = 10;
+
+export const reformatString = (input: string): string => {
+  if (!input) return "";
+  return input
+    .split('_') // Split the string by underscores
+    .map(word => 
+        word
+            .split('-') // Split the string by hyphens
+            .map(subWord => 
+                /^[A-Z]+$/.test(subWord) ? subWord : subWord.charAt(0).toUpperCase() + subWord.slice(1).toLowerCase()
+            )
+            .join('-') // Rejoin the hyphenated parts
+    )
+    .join(' ') // Rejoin the parts with spaces
+}
+
+export const formatThaiID = (value: string) => {
+  return value.replace(
+    /(\d{1})(\d{0,4})?(\d{0,5})?(\d{0,2})?(\d{0,1})?/,
+    (_, p1, p2, p3, p4, p5) => [p1, p2, p3, p4, p5].filter(Boolean).join('-')
+  )
+}
+
+export const formatPhone = (value: string) => {
+  return value.replace(
+    /(\d{0,3})?(\d{0,3})?(\d{0,4})?/,
+    (_, p1, p2, p3) => [p1, p2, p3].filter(Boolean).join('-')
+  )
+}
+
+export const isEquals = (a: any, b: any) => {
+  return JSON.stringify(a) === JSON.stringify(b)
+}
+
+export const isNumber = (value: string) => {
+  return /^[0-9]*$/.test(value)
+}
+
+export const getFileNameWithoutExtension = (filePath: string): string => {
+  const fileName = filePath.split('/').pop()?.split('\\').pop() || ""
+  return fileName.split('.').slice(0, -1).join('.') || fileName 
+}
+
+export const formatNumber = (value: number) => {
+  return new Intl.NumberFormat('en-US').format(value)
+}
+
+export const makeRandomText = (length: number): string => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  return Array.from({ length }, () => 
+    characters[Math.floor(Math.random() * characters.length)]
+  ).join('');
+};
+
+export const hashPassword = async (plainPassword: string): Promise<string> => {
+  const hashed = await bcrypt.hash(plainPassword, SALT_ROUNDS);
+  return hashed;
+};
+
+export const getId = (val: number | Option) => {
+  return typeof val === "number" ? val : val.value;
+};
+
+export const getStringId = (val: string | Option) => {
+  return typeof val === "string" ? val : val.value;
+};
+
+export const getFilesDiff = (newArray: any[], oldFileArray: any[]) => {
+  const currentURLs = newArray.map(data => data.url);
+  const oldURLs = oldFileArray.map(data => data.url);
+
+  // Find removed: in old but not in current
+  const removed = oldFileArray.filter(data => !currentURLs.includes(data.url));
+
+  // Find added: in current but not in old
+  const added = newArray.filter(data => !oldURLs.includes(data.url));
+
+  return { added, removed };
+};
+
+export const downloadFile = (fileName: string, url: string) => {
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", fileName);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+export const parseExcelDate = (dateValue: any) => {
+  if (!dateValue) {
+    return ""
+  }
+  if (typeof dateValue === "number") {
+    const date = new Date((dateValue - 25569) * 86400 * 1000);
+    const year = date.getFullYear();
+    const correctedYear = year >= 2500 ? year - 543 : year;
+
+    return `${correctedYear}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  }
+
+  if (dateValue instanceof Date && !isNaN(dateValue.getTime())) {
+    let year = dateValue.getFullYear();
+    if (year >= 2500) year -= 543;
+
+    return `${year}-${String(dateValue.getMonth() + 1).padStart(2, "0")}-${String(dateValue.getDate()).padStart(2, "0")}`;
+  }
+
+  if (typeof dateValue === "string" && dateValue.includes("T")) {
+    const date = new Date(dateValue);
+
+    let year = date.getFullYear();
+    if (year >= 2500) year -= 543;
+
+    return `${year}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  }
+
+  if (typeof dateValue === "string") {
+    const clean = dateValue.trim().replace(/[-.]/g, "/");
+
+    const parts = clean.split("/");
+    if (parts.length !== 3) return "";
+
+    let [day, month, year] = parts;
+
+    if (!day || !month || !year) return "";
+
+    let numericYear = parseInt(year, 10);
+
+    if (numericYear >= 2500) numericYear -= 543;
+
+    return `${numericYear}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+  return "";
+}

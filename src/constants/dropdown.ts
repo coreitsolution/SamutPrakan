@@ -1,0 +1,3 @@
+export const SPECIAL_ROW_PER_PAGES = [20, 50, 100]
+export const SUSPECT_PEOPLE_ROW_PER_PAGES = [20, 50, 100]
+export const SEARCH_SPECIAL_ROW_PER_PAGES = [10, 20, 50, 100]

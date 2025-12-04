@@ -1,0 +1,528 @@
+import { Map as LeafletMap, LatLngExpression } from 'leaflet';
+
+export interface MapConfig {
+  mapId: string
+  center: {
+    lat: number
+    lng: number
+  }
+  zoom: number
+  panControl?: boolean
+  zoomControl?: boolean
+  mapTypeControl?: boolean
+  streetViewControl?: boolean
+  fullscreenControl?: boolean
+}
+
+export interface MapProps {
+  height?: string
+  width?: string
+  panControl?: boolean
+  zoomControl?: boolean
+  mapTypeControl?: boolean
+  streetViewControl?: boolean
+  fullscreenControl?: boolean
+  currentLocation?: boolean
+  onMapLoad?: (mapInstance: LeafletMap | null) => void
+}
+
+export interface CheckPointViewModel {
+  id: number;
+  name: string;
+  lat: number;
+  lon: number;
+}
+
+export interface VehicleViewModel {
+  id: number;
+  plate: string;
+  location: string;
+  type: string;
+  brand: string;
+  color: string;
+  model: string;
+  date: string; // Date in string format, e.g., "2024-06-28"
+  time: string; // Time in string format, e.g., "20:12:04"
+  accuracy: string; // Accuracy as a percentage in string format, e.g., "98%"
+  imgCar: string; // Path to car image
+  imgPlate: string; // Path to plate image
+  isBackList?: boolean;
+}
+
+export interface CheckPointVehicleViewModel {
+  carId: number;
+  checkpointId: number;
+  carDetail: VehicleViewModel;
+}
+
+export interface AreaViewModel {
+  id: number;
+  name: string;
+  region: string;
+}
+
+export interface ProvinceViewModel {
+  id: number;
+  name: string;
+  areaId: number;
+}
+
+export interface StationViewModel {
+  id: number;
+  name: string;
+  provinceId: number;
+  lat: number;
+  lon: number;
+}
+
+// search
+export interface SearchResult {
+  isSelected: boolean;
+  id: number;
+  plate: string;
+  location: string;
+  pathImage: string;
+  pathImageVehicle: string;
+  directionString: string;
+  brand: string;
+  model: string;
+  color: string;
+  directionDetail: DirectionDetail[];
+  periodTime: string;
+  map: MapPosition[];
+  vehicle: VehicleViewModel;
+  ownerPerson: OwnerInformation;
+  benefitPerson: BenefitInformation;
+}
+
+export interface SearchMapResult {
+  name: string
+  location: LatLngExpression
+  placeId?: string
+}
+
+export interface MapPosition {
+  lat: number;
+  lng: number;
+}
+
+export interface DirectionDetail {
+  color?: string;
+  direction: string;
+  dateTime: string;
+}
+
+export interface OwnerInformation {
+  name: string;
+  nationNumber: number;
+  address: string;
+}
+
+export interface BenefitInformation {
+  name: string;
+  nationNumber: number;
+  address: string;
+}
+
+export interface ExtraRegistrationData {
+  id: number
+  behavior1: string
+  behavior2: string
+  car_registration: string
+  case_id: string
+  created_at: string
+  data_owner: string
+  end_arrest_date: Date | undefined
+  images: string[]
+  letter_category: string
+  phone: string
+  province_code: number
+  registration_type_id: number
+  start_arrest_date: Date | undefined
+  agency_id: number
+  status_id: number
+  updated_at: string
+}
+
+export interface AgenciesData {
+  id: number
+  agency: string
+  phone: string
+  address: string
+  latitude: string
+  longitude: string
+  created_at: Date
+  updated_at: Date
+}
+
+export interface DataStatusData {
+  id: number
+  status: string
+  created_at: Date
+  updated_at: Date
+}
+
+export interface ProvincesData {
+  id: number
+  province_name: string
+  province_name_thai: string
+  province_code: string
+  createdAt: Date
+}
+
+export interface RegistrationTypesData {
+  id: number
+  registration_type: string
+  created_at: Date
+  updated_at: Date
+}
+
+export interface Officer {
+  prefix: string
+  name: string
+  surname: string
+  position: string
+  phone: string
+}
+
+export interface FilterSpecialRegistration {
+  letterCategory: string
+  carRegistration: string
+  selectedProvince: number | string
+  selectedRegistrationType: number | string
+  agency: string
+  selectedStatus: number | string
+}
+
+export interface FilterSpecialPeople {
+  selectedNamePrefix: number | string
+  firstname: string
+  lastname: string
+  selectedPersonType: number | string
+  agency: string
+  selectedStatus: number | string
+}
+
+export interface FilterSpecialPlatesBody {
+  platePrefix: string
+  plateNumber: string
+  regionCode: string
+  vehicleBodyTypeTH: string
+  vehicleMake: string
+  vehicleModel: string
+  vehicleColor: string
+  startDate: string
+  endDate: string
+  cameraUidList: string[]
+  plateClassId: number
+  page: Number,
+  limit: Number,
+  orderBy?: string,
+  reverseOrder?: boolean,
+  includesVehicleInfo?: Number,
+}
+
+export type FilterSpecialPlates = Omit<FilterSpecialPlatesBody, "page" | "limit">
+
+export interface FilterSpecialSuspectPeople {
+  namePrefix: number
+  firstname: string
+  lastname: string
+  faceConfidence: number
+  selectedStartDate: Date | null
+  selectedEndDate: Date | null
+  selectedCheckpoint: string[]
+  selectedRegistrationType: string
+}
+
+export interface DetactSpecialPlate {
+  logo_text: string
+  title_header: string
+  title_check_point: string
+  table_columns: DetactSpecialPlateColumns
+  table_rows: DetactSpecialPlateRows[]
+}
+
+export interface DetactSpecialPlateColumns {
+  plate_header: string
+  image_header: string
+  checkPoint_header: string
+  vehicleType_header: string
+  vehicleDetail_header: string
+  accuracy_header: string
+  registrationGroup_header: string
+  dateTime_header: string
+  lane_header: string
+}
+
+export interface DetactSpecialPlateRows {
+  plate_data: string
+  image_data: ImagesData
+  checkPoint_data: string
+  vehicleType_data: string
+  vehicleDetail_data: string[]
+  accuracy_data: string
+  registrationGroup_data: string
+  dateTime_data: string
+  lane_data: string
+}
+
+export interface ImagesData {
+  vehicle_image: string
+  plate_image: string
+}
+
+export interface DocumentElementWithFullscreen extends HTMLElement {
+  msRequestFullscreen?: () => Promise<void>
+  mozRequestFullScreen?: () => Promise<void>
+  webkitRequestFullscreen?: () => Promise<void>
+}
+
+export interface DocumentWithFullscreen extends Document {
+  mozFullScreenElement?: Element
+  msFullscreenElement?: Element
+  webkitFullscreenElement?: Element
+  msExitFullscreen?: () => Promise<void>
+  mozCancelFullScreen?: () => Promise<void>
+  webkitExitFullscreen?: () => Promise<void>
+}
+
+export interface PdfDownload {
+  statusCode?: number
+  status?: string
+  success?: boolean
+  message?: string
+  filePath: string
+}
+
+export interface Option {
+  label: string;
+  value: number;
+}
+
+export interface Pagination {
+  page: number;
+  maxPage: number;
+  limit: number;
+  count: number;
+  countAll: number;
+}
+
+export interface FileUpload {
+  filename: string
+  originalName: string
+  mimetype: string
+  sizeMB: number
+  title: string
+  url: string 
+  createdAt?: string;
+}
+
+export interface FileUploadResponse {
+  statusCode: number;
+  status: string;
+  success: boolean;
+  message: string;
+  pagination: Pagination;
+  data: FileUpload[];
+}
+
+export interface UserResponse {
+  statusCode: number;
+  status: string;
+  success: boolean;
+  message: string;
+  pagination: Pagination;
+  data: User[];
+}
+
+export interface UserPermission {
+  userRoleId: number
+  group_name?: string
+  checkpoint: CheckpointPermissions
+}
+
+export interface CheckpointPermissions {
+  realtime: PermissionDetail;
+  specialPlateManage: PermissionDetail;
+  specialPlateSearch: PermissionDetail;
+  setting: PermissionDetail;
+}
+
+export interface PermissionDetail {
+  select: boolean;
+}
+
+export interface User {
+  id: number
+  idcard: string;
+  tokens: string;
+  is_logged_in: boolean;
+  visible: boolean;
+  last_login: string;
+  created_at: string;
+  updated_at: string;
+  title_id: number
+  firstname: string
+  lastname: string
+  email: string
+  phone: string
+  job_position: string
+  agency: string
+  permissions: UserPermission
+  status: string
+  active: boolean
+  image_url: string
+  user_group_id: number
+  username: string
+  password: string
+  dob: Date | null
+}
+
+export interface FileData {
+  id: number
+  uid: string;
+  title: string
+  url: string
+  created_at?: string
+}
+
+export interface FileDataResponse {
+  statusCode: number;
+  status: string;
+  success: boolean;
+  message: string;
+  pagination: Pagination;
+  data: FileDataDetail[];
+}
+
+export interface FileDataDetail {
+  created_at: string;
+  id: number;
+  notes: string | null;
+  uid: string;
+  special_plate_id: number;
+  title: string;
+  updated_at: string;
+  url: string;
+}
+
+export interface SpecialPlate {
+  id: number;
+  uid: string;
+  plate_prefix: string;
+  plate_number: string;
+  region_code: string;
+  plate_class_id: number;
+  case_number: string;
+  arrest_warrant_date: string;
+  arrest_warrant_expire_date: string
+  behavior: string;
+  case_owner_name: string;
+  case_owner_agency: string;
+  case_owner_phone: string;
+  visible: boolean;
+  active: boolean;
+  deleted: boolean;
+  deleted_by_id: number;
+  created_at: string;
+  updated_at: string;
+  imagesData?: FileDataDetail[];
+  filesData?: FileDataDetail[];
+}
+
+export interface SpecialPlateResponse {
+  statusCode: number;
+  status: string;
+  success: boolean;
+  message: string;
+  pagination: Pagination;
+  data: SpecialPlate[];
+}
+
+export interface SpecialPlateFilesResponse {
+  statusCode: number;
+  status: string;
+  success: boolean;
+  message: string;
+  pagination: Pagination;
+  data: SpecialPlateFileData[];
+}
+
+export interface SpecialPlateCreateResponse {
+  statusCode: number;
+  status: string;
+  success: boolean;
+  message: string;
+  pagination: Pagination;
+  data: SpecialPlate;
+}
+
+export interface SpecialPlateFileData {
+  id: number;
+  special_plate_id: number;
+  title: string;
+  special_plate_uid: string;
+  uid: string;
+  url: string;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ImportSpecialPlates {
+  id: number
+  plate_group: string
+  plate_number: string
+  province: string
+  plate_type: string
+  case_number: string
+  arrest_warrant_date: string
+  arrest_warrant_expire_date: string
+  behavior: string
+  case_owner_name: string
+  case_owner_agency: string
+  case_owner_phone: string
+  image: string
+  file: string
+  active: string
+}
+
+export interface ImportSpecialPlatesDetail {
+  id: number
+  plate_group: string
+  plate_number: string
+  region_code: string
+  province?: string
+  plate_class_id: number
+  plate_type?: string
+  case_number: string
+  arrest_warrant_date: string
+  arrest_warrant_expire_date: string
+  behavior: string
+  case_owner_name: string
+  case_owner_agency: string
+  case_owner_phone: string
+  image: string
+  file: string
+  visible: boolean
+  activeString?: string
+  active: boolean
+  imagesUploadedData?: FileUpload
+  fileUploadedData?: FileUpload
+  createdAt?: string
+  updatedAt?: string
+  cannotImport?: boolean
+}
+
+export interface ZipDownloadResponse {
+  statusCode: number;
+  status: string;
+  success: boolean;
+  message: string;
+  data: ZipDownload;
+}
+
+export interface ZipDownload {
+  zipUrl: string;
+}

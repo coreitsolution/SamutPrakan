@@ -1,0 +1,33 @@
+import { OfficerPositionsDetail } from "../features/dropdown/dropdownTypes"
+
+export const positions: OfficerPositionsDetail[] = [
+  { id: 1, position_th: "พลทหาร", position_en: "Private", active: true },
+  { id: 2, position_th: "สิบตรี", position_en: "Corporal", active: true },
+  { id: 3, position_th: "สิบโท", position_en: "Sergeant", active: true },
+  { id: 4, position_th: "สิบเอก", position_en: "Staff Sergeant", active: true },
+  { id: 5, position_th: "จ่าสิบตรี", position_en: "Warrant Officer Class 1", active: true },
+  { id: 6, position_th: "จ่าสิบเอก", position_en: "Warrant Officer Class 2", active: true },
+  { id: 7, position_th: "ร้อยตรี", position_en: "Second Lieutenant", active: true },
+  { id: 8, position_th: "ร้อยโท", position_en: "First Lieutenant", active: true },
+  { id: 9, position_th: "ร้อยเอก", position_en: "Captain", active: true },
+  { id: 10, position_th: "พันตรี", position_en: "Major", active: true },
+  { id: 11, position_th: "พันโท", position_en: "Lieutenant Colonel", active: true },
+  { id: 12, position_th: "พันเอก", position_en: "Colonel", active: true },
+  { id: 13, position_th: "พลตรี", position_en: "Brigadier General", active: true },
+  { id: 14, position_th: "พลโท", position_en: "Lieutenant General", active: true },
+  { id: 15, position_th: "พลเอก", position_en: "General", active: true },
+  { id: 16, position_th: "พลตำรวจ", position_en: "Police Private", active: true },
+  { id: 17, position_th: "สิบตำรวจตรี", position_en: "Police Corporal", active: true },
+  { id: 18, position_th: "สิบตำรวจโท", position_en: "Police Sergeant", active: true },
+  { id: 19, position_th: "สิบตำรวจเอก", position_en: "Police Staff Sergeant", active: true },
+  { id: 20, position_th: "จ่าสิบตำรวจ", position_en: "Police Warrant Officer", active: true },
+  { id: 21, position_th: "ร้อยตำรวจตรี", position_en: "Police Sub-Lieutenant", active: true },
+  { id: 22, position_th: "ร้อยตำรวจโท", position_en: "Police Lieutenant", active: true },
+  { id: 23, position_th: "ร้อยตำรวจเอก", position_en: "Police Captain", active: true },
+  { id: 24, position_th: "พันตำรวจตรี", position_en: "Police Major", active: true },
+  { id: 25, position_th: "พันตำรวจโท", position_en: "Police Lieutenant Colonel", active: true },
+  { id: 26, position_th: "พันตำรวจเอก", position_en: "Police Colonel", active: true },
+  { id: 27, position_th: "พลตำรวจตรี", position_en: "Police Brigadier General", active: true },
+  { id: 28, position_th: "พลตำรวจโท", position_en: "Police Lieutenant General", active: true },
+  { id: 29, position_th: "พลตำรวจเอก", position_en: "Police General", active: true }
+];

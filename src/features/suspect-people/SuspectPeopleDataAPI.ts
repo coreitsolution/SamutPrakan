@@ -1,0 +1,107 @@
+import { getUrls } from '../../config/runtimeConfig';
+import { fetchClient, combineURL } from "../../utils/fetchClient"
+import { isDevEnv } from "../../config/environment"
+import { NewSuspectPeople, SuspectPeopleData, SuspectPeopleRespondsDetail, SuspectPeopleDetail } from "./SuspectPeopleDataTypes"
+import { suspectPeopleDetail } from "../../mocks/mockSuspectPeopleData"
+
+let mockSpecialSuspectPeopleData = [...suspectPeopleDetail]
+
+export const fetchSpecialSuspectPeopleData = async (param?: Record<string, string>): Promise<SuspectPeopleData> => {
+  const { API_URL } = getUrls();
+  if (isDevEnv) {
+    const data = {
+      data: mockSpecialSuspectPeopleData
+    }
+    return Promise.resolve(data)
+  }
+  return await fetchClient<SuspectPeopleData>(combineURL(API_URL, "/watchlist/get"), {
+    method: "GET",
+    queryParams: param,
+  });
+}
+
+export const postSpecialSuspectPeopleData = async (newSetting: NewSuspectPeople): Promise<SuspectPeopleRespondsDetail> => {
+  const { API_URL } = getUrls();
+  try {
+    if (isDevEnv) {
+      const ids = mockSpecialSuspectPeopleData.map(setting => setting.id)
+      const newId = ids.length > 0 ? Math.max(...ids) + 1 : 1
+      const settingWithId: SuspectPeopleRespondsDetail = { 
+        ...newSetting, 
+        id: newId,
+        uid: newId.toString(),
+        watchlist_images: [],
+        watchlist_files: []
+      }
+      if (Object.isExtensible(mockSpecialSuspectPeopleData)) {
+        mockSpecialSuspectPeopleData.push(settingWithId);
+      } else {
+        mockSpecialSuspectPeopleData = [...mockSpecialSuspectPeopleData, settingWithId];
+      }
+      return Promise.resolve(settingWithId)
+    }
+    return await fetchClient<SuspectPeopleRespondsDetail>(combineURL(API_URL, "/watchlist/create"), {
+        method: "POST",
+        body: JSON.stringify(newSetting),
+      });
+  } 
+  catch (error) {
+    throw new Error((error as { message: string }).message || "Unknown error occurred while posting data.")
+  }
+}
+
+export const deleteSpecialSuspectPeopleData = async (id: number): Promise<void> => {
+  const { API_URL } = getUrls();
+  try {
+    if (isDevEnv) {
+      const index = mockSpecialSuspectPeopleData.findIndex((data) => data.id === id)
+      if (index !== -1) {
+        mockSpecialSuspectPeopleData = mockSpecialSuspectPeopleData.filter(data => data.id !== id);
+      }
+      return Promise.resolve()
+    }
+    const body = { id: id }
+    return await fetchClient<void>(
+      combineURL(API_URL, `/watchlist/delete`),
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      }
+    )
+  } 
+  catch (error) {
+    throw new Error((error as { message: string }).message || "Unknown error occurred while deleting data.")
+  }
+}
+
+export const putSpecialSuspectPeopleData = async (updated: SuspectPeopleDetail): Promise<SuspectPeopleRespondsDetail> => {
+  const { API_URL } = getUrls();
+  try {
+    if (isDevEnv) {
+      const index = mockSpecialSuspectPeopleData.findIndex((data) => data.id === updated.id)
+      if (index === -1) {
+        return Promise.reject(new Error("Setting not found in mock data"))
+      }
+  
+      if (!Object.isExtensible(mockSpecialSuspectPeopleData)) {
+        mockSpecialSuspectPeopleData = [...mockSpecialSuspectPeopleData];
+      }
+      
+      mockSpecialSuspectPeopleData[index] = { ...mockSpecialSuspectPeopleData[index], ...updated }
+      return Promise.resolve(mockSpecialSuspectPeopleData[index])
+    }
+  
+    return await fetchClient<SuspectPeopleRespondsDetail>(
+      combineURL(API_URL, `/watchlist/update`),
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      }
+    )
+  } 
+  catch (error) {
+    throw new Error((error as { message: string }).message || "Unknown error occurred while updating data.") 
+  }
+}

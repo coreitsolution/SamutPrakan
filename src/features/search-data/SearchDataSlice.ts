@@ -1,0 +1,110 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+
+import { Status } from "../../constants/statusEnum"
+
+// Types
+import { SpecialPlateSearchResult, SpecialSuspectPeopleSearchResult } from "./SearchDataTypes"
+import { FilterSpecialPlatesBody, PdfDownload } from "../types";
+
+// API
+import {
+  downloadPdfSpecialPlate,
+  postSpecialPlateSearchData,
+  fetchSpecialSuspectPeopleSearchData
+} from "./SearchDataAPI"
+
+interface SearchDataState {
+  specialPlateSearchData: SpecialPlateSearchResult | null
+  specialSuspectPeopleSearchData: SpecialSuspectPeopleSearchResult | null
+  downloadPath: PdfDownload | null
+  searchDataStatus: Status
+  searchDataError: string | null
+}
+
+const initialState: SearchDataState = {
+  specialPlateSearchData: null,
+  specialSuspectPeopleSearchData: null,
+  downloadPath: null,
+  searchDataStatus: Status.IDLE,
+  searchDataError: null,
+}
+
+export const postSpecialPlateSearchDataThunk = createAsyncThunk(
+  "searchData/postSpecialPlateSearchData",
+  async (body: FilterSpecialPlatesBody) => {
+    const response = await postSpecialPlateSearchData(body)
+    return response
+  }
+)
+
+export const fetchSpecialSuspectPeopleSearchDataThunk = createAsyncThunk(
+  "searchData/fetchSpecialSuspectPeopleSearchData",
+  async (param?: Record<string, string>) => {
+    const response = await fetchSpecialSuspectPeopleSearchData(param)
+    return response
+  }
+)
+
+export const downloadPdfSpecialPlateThunk = createAsyncThunk(
+  "searchData/downloadPdfSpecialPlate",
+  async() => {
+    const response = await downloadPdfSpecialPlate()
+    return response
+  }
+)
+
+const searchDataSlice = createSlice({
+  name: "searchData",
+  initialState,
+  reducers: {
+    clearSearchData: (state) => {
+      state.searchDataStatus = Status.IDLE;
+      state.specialPlateSearchData = null;
+    },
+  },
+  extraReducers: (builder) => {
+    // Special Plates
+    builder
+      .addCase(postSpecialPlateSearchDataThunk.pending, (state) => {
+        state.searchDataStatus = Status.LOADING
+      })
+      .addCase(postSpecialPlateSearchDataThunk.fulfilled, (state, action) => {
+        state.searchDataStatus = Status.SUCCEEDED
+        state.specialPlateSearchData = action.payload
+      })
+      .addCase(postSpecialPlateSearchDataThunk.rejected, (state, action) => {
+        state.searchDataStatus = Status.FAILED
+        state.searchDataError = action.error.message || "Failed to fetch special plates data."
+      })
+
+    builder
+      .addCase(downloadPdfSpecialPlateThunk.pending, (state) => {
+        state.searchDataStatus = Status.LOADING
+      })
+      .addCase(downloadPdfSpecialPlateThunk.fulfilled, (state, action) => {
+        state.searchDataStatus = Status.SUCCEEDED
+        state.downloadPath = action.payload
+      })
+      .addCase(downloadPdfSpecialPlateThunk.rejected, (state, action) => {
+        state.searchDataStatus = Status.FAILED
+        state.searchDataError = action.error.message || "Failed to fetch special plates data."
+      })
+    
+    // Special Suspect People
+    builder
+      .addCase(fetchSpecialSuspectPeopleSearchDataThunk.pending, (state) => {
+        state.searchDataStatus = Status.LOADING
+      })
+      .addCase(fetchSpecialSuspectPeopleSearchDataThunk.fulfilled, (state, action) => {
+        state.searchDataStatus = Status.SUCCEEDED
+        state.specialSuspectPeopleSearchData = action.payload
+      })
+      .addCase(fetchSpecialSuspectPeopleSearchDataThunk.rejected, (state, action) => {
+        state.searchDataStatus = Status.FAILED
+        state.searchDataError = action.error.message || "Failed to fetch special suspect people data."
+      })
+  }
+})
+
+export const { clearSearchData } = searchDataSlice.actions;
+export default searchDataSlice.reducer

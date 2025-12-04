@@ -1,0 +1,15 @@
+{
+  "VITE_BASE_URL": "https://lpr-checkpoint.local",
+  "VITE_IMAGE_BASE_URL": "",
+  "VITE_FILE_UPLOAD_BASE_URL": "https://lpr-checkpoint.local",
+  "VITE_STREAM_BASE_URL": "https://lpr-checkpoint.local:3103",
+  "VITE_TELEGRAM_BASE_URL": "https://lpr-checkpoint.local:3050",
+  "VITE_SERVICE_1_BASE_URL": "https://lpr-checkpoint.local:3109",
+  "VITE_API_VERSION": "/v2",
+  "VITE_BASE_TELEGRAM_CHAT_ID": "-4682289114",
+  "VITE_SERVER_SENT_EVENTS_URL": "https://lpr-checkpoint.local/events-agent/events",
+  "VITE_SERVER_SENT_EVENTS_TOKEN": "fKa9RnG6H9Oo3giH2-eessXsPwk0YZ3jqxcjfsA7Zrjq5YaY9eh.ibMFXcyKPSRMGU0tb-n8q4yxqBtJFeQCvLSaC7TyAay.z02wJm",
+  "VITE_OSRM_URL": "http://localhost:5000",
+  "PROJECT_NAME": "License Plate Recognition",
+  "NAV_LOGO_BG_WHITE": false
+}
