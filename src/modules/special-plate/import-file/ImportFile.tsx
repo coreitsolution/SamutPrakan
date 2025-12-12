@@ -59,7 +59,6 @@ const ImportFile: React.FC<ImportFileProps> = ({open, onClose}) => {
   const [filesList, setFilesList] = useState<FileUpload[]>([]);
   const [textsList, setTextsList] = useState<ImportSpecialPlates[]>([]);
   const [finalList, setFinalList] = useState<ImportSpecialPlatesDetail[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string[]>([]);
 
   // Constants
   const breadcrumbItems = [
@@ -82,40 +81,42 @@ const ImportFile: React.FC<ImportFileProps> = ({open, onClose}) => {
   };
 
   const handleConfirmClick = async () => {
-    setIsConfirmationClick(true);
-    const importableData = finalList.filter(item => !item.cannotImport)
-    setIsLoading(true)
+    try {
+      setIsConfirmationClick(true);
+      const importableData = finalList.filter(item => !item.cannotImport)
+      setIsLoading(true)
 
-    // Add Special Plate
-    for (const data of importableData) {
-      await addSpecialPlate(data)
-    }
-    
-    // Delete unused images
-    const usedImages = new Set(importableData.flatMap(item => item.imagesUploadedData?.url || []))
-    const unusedImages = imagesList.filter(image => !usedImages.has(image.url))
-    if (unusedImages.length > 0) {
-      await handleDeleteFile(unusedImages)
-    }
+      // Add Special Plate
+      for (const data of importableData) {
+        await addSpecialPlate(data)
+      }
+      
+      // Delete unused images
+      const usedImages = new Set(importableData.flatMap(item => item.imagesUploadedData?.url || []))
+      const unusedImages = imagesList.filter(image => !usedImages.has(image.url))
+      if (unusedImages.length > 0) {
+        await handleDeleteFile(unusedImages)
+      }
 
-    // Delete unused files
-    const usedFiles = new Set(importableData.flatMap(item => item.fileUploadedData?.url || []))
-    const unusedFiles = filesList.filter(file => !usedFiles.has(file.url))
-    if (unusedFiles.length > 0) {
-      await handleDeleteFile(unusedFiles)
-    }
+      // Delete unused files
+      const usedFiles = new Set(importableData.flatMap(item => item.fileUploadedData?.url || []))
+      const unusedFiles = filesList.filter(file => !usedFiles.has(file.url))
+      if (unusedFiles.length > 0) {
+        await handleDeleteFile(unusedFiles)
+      }
 
-    if (errorMessage.length > 0) {
-      PopupMessage(t('message.error.error-while-saving'), errorMessage.join(","), "error");
-    }
-    else {
       PopupMessage(t('message.success.save-success'), t('message.success.save-success-message'), "success");
-    }
-    
-    setIsLoading(false);
+      
+      setIsLoading(false);
 
-    clearData();
-    onClose();
+      clearData();
+      onClose();
+    }
+    catch (error) {
+      setIsLoading(false);
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      PopupMessage(t('message.error.error-while-saving'), errorMessage, "error");
+    }
   }
 
   const addSpecialPlate = async (data: ImportSpecialPlatesDetail) => {
@@ -184,7 +185,7 @@ const ImportFile: React.FC<ImportFileProps> = ({open, onClose}) => {
     } 
     catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
-      setErrorMessage((prevData) => [...prevData, errorMessage]);
+      throw errorMessage;
     }
   }
 
@@ -210,7 +211,7 @@ const ImportFile: React.FC<ImportFileProps> = ({open, onClose}) => {
       await deleteFileUpload(urls)
     }
     catch (error) {
-      PopupMessage(t("message.error.error-delete-file"), error instanceof Error ? error.message : String(error), "error");
+      throw `${t("message.error.error-delete-file")}: ${error instanceof Error ? error.message : String(error)}`
     }
   }
 
@@ -256,7 +257,6 @@ const ImportFile: React.FC<ImportFileProps> = ({open, onClose}) => {
     setTextsList([]);
     setFinalList([]);
     setStep(0);
-    setErrorMessage([]);
     setIsConfirmationClick(false);
   }
 

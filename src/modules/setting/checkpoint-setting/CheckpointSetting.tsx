@@ -274,7 +274,7 @@ const CheckpointSetting: React.FC<CheckpointSettingProps> = ({
       }
 
       const body = { 
-        checkpoint_ip: "10.1.1.1",
+        checkpoint_ip: "",
         checkpoint_name: data.checkpoint_name,
         organization: data.organization,
         province_code: getId(data.province_code),

@@ -80,7 +80,7 @@ const CCTV = () => {
   }
   const [isLoading, setIsLoading] = useState(true)
   const [cameraDetailSettingData, setCameraDetailSettingData] = useState<CameraDetailSettings[]>([])
-  const [cameraSettingDropdown, setCameraSettingDropdown] = useState<{ id: number, name: string }[]>([])
+  const [cameraSettingDropdown, setCameraSettingDropdown] = useState<{ uid: string, name: string }[]>([])
   const [dropdownVisible, setDropdownVisible] = useState<number | null>(null)
   const dropdownRefs = useRef<(HTMLDivElement | null)[]>([])
   const startButtonRefs = useRef<(HTMLButtonElement | null)[]>([])
@@ -250,9 +250,9 @@ const CCTV = () => {
     }
   }
 
-  const handleCameraSelect = (selectedId: number, cameraIndex: number) => {
+  const handleCameraSelect = (selectedUid: string, cameraIndex: number) => {
     const selectedCamera = cameraDetailSettingData.find(
-      (camera) => camera.id === selectedId
+      (camera) => camera.uid === selectedUid
     );
     if (selectedCamera) {
       setActiveStreamUrls((prevUrls) => ({
@@ -270,8 +270,8 @@ const CCTV = () => {
 
   useEffect(() => {
     if (cameraSettings && cameraSettings.data) {
-      const dropdownData = cameraSettings.data.map(({ id, camera_name }) => ({
-        id,
+      const dropdownData = cameraSettings.data.map(({ uid, camera_name }) => ({
+        uid,
         name: camera_name,
       }))
       setCameraSettingDropdown(dropdownData)
@@ -330,6 +330,7 @@ const CCTV = () => {
                         streamUrl={(activeStreamUrls[index] && activeStreamUrls[index].url) || live.live_stream_url}
                         id={(activeStreamUrls[index] && activeStreamUrls[index].id) || live.alpr_camera_id}
                         customClass={`${selectedScreenValue > 1 ? "h-[34vh]" : "h-[80vh]"} w-full`}
+                        isMjpeg={true}
                       />
                     </div>
                   </div>
@@ -418,8 +419,8 @@ const CCTV = () => {
                       <ul className="py-1">
                         {cameraSettingDropdown.map((option) => (
                           <li
-                            key={option.id}
-                            onClick={() => handleCameraSelect(option.id, index)}
+                            key={option.uid}
+                            onClick={() => handleCameraSelect(option.uid, index)}
                             className={`px-4 py-2 hover:bg-gray-300 cursor-pointer text-sm text-gray-700 text-start ${index % 2 === 0 ? "bg-white" : "bg-whiteSmoke"}`}
                           >
                             {option.name}

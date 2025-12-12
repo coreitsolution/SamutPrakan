@@ -79,7 +79,7 @@ const CCTVSideBar: React.FC<CCTVSideBarProp> = ({setCollapse, cameraSetting, set
   const [connectionListData, setConnectionListData] = useState<ConnectionResult[]>([])
   const [systemStatusListData, setSystemStatusListData] = useState<SystemStatusData[]>([])
 
-  const { FILE_URL, IMAGE_URL, API_URL } = getUrls();
+  const { ZIP_URL, IMAGE_URL, API_URL } = getUrls();
   const { vehicleCountData, systemStatusData, connectionData } = useSelector(
     (state: RootState) => state.liveViewRealTimes
   )
@@ -215,7 +215,7 @@ const CCTVSideBar: React.FC<CCTVSideBarProp> = ({setCollapse, cameraSetting, set
       
       if (result && result.data) {
         if (result.data.zipUrl) {
-          const fullUrl = `${FILE_URL}${result.data.zipUrl}`
+          const fullUrl = `${ZIP_URL}${result.data.zipUrl}`
           window.open(fullUrl, '_blank')
           return
         }

@@ -21,6 +21,7 @@ export function getUrls() {
   return {
     IMAGE_URL: cfg.VITE_IMAGE_BASE_URL,
     FILE_URL: cfg.VITE_FILE_UPLOAD_BASE_URL,
+    ZIP_URL: cfg.VITE_ZIP_DOWNLOAD_BASE_URL,
     STREAM_URL: `${cfg.VITE_STREAM_BASE_URL}${cfg.VITE_API_VERSION}`,
     API_URL: `${cfg.VITE_BASE_URL}/lpr-checkpoint-api${cfg.VITE_API_VERSION}`,
     TELEGRAM_URL: `${cfg.VITE_TELEGRAM_BASE_URL}/bot`,

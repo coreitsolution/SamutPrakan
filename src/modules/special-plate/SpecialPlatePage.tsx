@@ -211,7 +211,6 @@ const SpecialPlatePage: React.FC<SpecialPlateProps> = ({}) => {
   }
 
   const handleDownload = async (data: SpecialPlate) => {
-    setSelectedRow(data);
     const regions = sliceDropdown?.regions?.data.find(regions => regions.region_code === data.region_code);
     const regionName =
       i18n.language === 'th'
@@ -231,7 +230,7 @@ const SpecialPlatePage: React.FC<SpecialPlateProps> = ({}) => {
         method: "GET",
         signal: controller.signal,
         queryParams: {
-          filter: `uid=${uid}`
+          uid: `${uid}`
         }
       })
 
