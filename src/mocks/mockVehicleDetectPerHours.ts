@@ -1,0 +1,28 @@
+import { VehicleDetectPerHourChartData } from "../features/chart/types";
+
+export const mockVehicleDetectPerHour: VehicleDetectPerHourChartData[] = [
+  { hour: 1, label: "00:00", count: 1200 },
+  { hour: 2, label: "01:00", count: 800 },
+  { hour: 3, label: "02:00", count: 500 },
+  { hour: 4, label: "03:00", count: 300 },
+  { hour: 5, label: "04:00", count: 400 },
+  { hour: 6, label: "05:00", count: 700 },
+  { hour: 7, label: "06:00", count: 150 },
+  { hour: 8, label: "07:00", count: 280 },
+  { hour: 9, label: "08:00", count: 35 },
+  { hour: 10, label: "09:00", count: 420 },
+  { hour: 11, label: "10:00", count: 480 },
+  { hour: 12, label: "11:00", count: 500 },
+  { hour: 13, label: "12:00", count: 460 },
+  { hour: 14, label: "13:00", count: 400 },
+  { hour: 15, label: "14:00", count: 3800 },
+  { hour: 16, label: "15:00", count: 450 },
+  { hour: 17, label: "16:00", count: 520 },
+  { hour: 18, label: "17:00", count: 600 },
+  { hour: 19, label: "18:00", count: 580 },
+  { hour: 20, label: "19:00", count: 440 },
+  { hour: 21, label: "20:00", count: 3700 },
+  { hour: 22, label: "21:00", count: 3000 },
+  { hour: 23, label: "22:00", count: 220 },
+  { hour: 24, label: "23:00", count: 170 },
+];
