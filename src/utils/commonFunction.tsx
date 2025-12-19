@@ -90,7 +90,7 @@ export const isStringMatch = (base: string, newString: string) => {
   return regex.test(newString);
 };
 
-export const getPlateTypeColor = (plateType: number | null) => {
+export const getPlateTypeColor = (typeName: string) => {
   let color = "white";
   let backgroundColor = "white";
   let pinBackgroundColor = "black";
@@ -99,14 +99,14 @@ export const getPlateTypeColor = (plateType: number | null) => {
   let title = "";
   let showAlert = false;
 
-  switch (plateType) {
-    case 1:
+  switch (typeName.toLowerCase()) {
+    case "normal":
       title = "Normal";
       break;
-    case 2:
+    case "guest":
       title = "Guest";
       break;
-    case 3:
+    case "member":
       color = "white";
       backgroundColor = "#0099ff";
       pinBackgroundColor = "#0099ff";
@@ -114,7 +114,7 @@ export const getPlateTypeColor = (plateType: number | null) => {
       title = "Member";
       showAlert = true;
       break;
-    case 4:
+    case "vip":
       color = "white";
       backgroundColor = "#009900";
       pinBackgroundColor = "#009900";
@@ -122,7 +122,7 @@ export const getPlateTypeColor = (plateType: number | null) => {
       title = "VIP";
       showAlert = true;
       break;
-    case 6:
+    case "blacklist":
       color = "white";
       backgroundColor = "#FF0000";
       pinBackgroundColor = "#FF0000";
@@ -131,7 +131,7 @@ export const getPlateTypeColor = (plateType: number | null) => {
       textShadow = "2px 0 #fff, -2px 0 #fff, 0 2px #fff, 0 -2px #fff, 1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff";
       showAlert = true;
       break;
-    case 7:
+    case "watchList":
       color = "white";
       backgroundColor = "#FDB600";
       pinBackgroundColor = "#FDB600";

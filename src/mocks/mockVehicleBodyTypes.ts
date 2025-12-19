@@ -10,8 +10,8 @@ export const mockVehicleBodyTypes: VehicleBodyType[] = [
     "body_type_en": "Antique",
     "body_type_th": "รถยนต์นั่งส่วนบุคคลไม่เกิน 7 คน",
     "details": "",
-    "visible": 1,
-    "active": 1
+    "visible": true,
+    "active": true,
   },
   {
     "id": 2,
@@ -19,8 +19,8 @@ export const mockVehicleBodyTypes: VehicleBodyType[] = [
     "body_type_en": "Commercial Bus",
     "body_type_th": "รถโดยสารประจำทาง",
     "details": "",
-    "visible": 1,
-    "active": 1
+    "visible": true,
+    "active": true,
   },
   {
     "id": 3,
@@ -28,8 +28,8 @@ export const mockVehicleBodyTypes: VehicleBodyType[] = [
     "body_type_en": "School Bus",
     "body_type_th": "รถโดยสารไม่ประจำทาง",
     "details": "",
-    "visible": 1,
-    "active": 1
+    "visible": true,
+    "active": true,
   },
   {
     "id": 4,
@@ -37,8 +37,8 @@ export const mockVehicleBodyTypes: VehicleBodyType[] = [
     "body_type_en": "Emergency Vehicle",
     "body_type_th": "รถยนต์นั่งส่วนบุคคลเกิน 7 คน",
     "details": "",
-    "visible": 1,
-    "active": 1
+    "visible": true,
+    "active": true,
   },
   {
     "id": 5,
@@ -46,8 +46,8 @@ export const mockVehicleBodyTypes: VehicleBodyType[] = [
     "body_type_en": "Motorcycle",
     "body_type_th": "รถจักรยานยนต์ส่วนบุคคล",
     "details": "",
-    "visible": 1,
-    "active": 1
+    "visible": true,
+    "active": true,
   },
   {
     "id": 6,
@@ -55,8 +55,8 @@ export const mockVehicleBodyTypes: VehicleBodyType[] = [
     "body_type_en": "Sedan (Compact)",
     "body_type_th": "รถยนต์นั่งส่วนบุคคลไม่เกิน 7 คน",
     "details": "",
-    "visible": 1,
-    "active": 1
+    "visible": true,
+    "active": true,
   },
   {
     "id": 7,
@@ -64,8 +64,8 @@ export const mockVehicleBodyTypes: VehicleBodyType[] = [
     "body_type_en": "Sedan (Convertible)",
     "body_type_th": "รถยนต์นั่งส่วนบุคคลไม่เกิน 7 คน",
     "details": "",
-    "visible": 1,
-    "active": 1
+    "visible": true,
+    "active": true,
   },
   {
     "id": 8,
@@ -73,8 +73,8 @@ export const mockVehicleBodyTypes: VehicleBodyType[] = [
     "body_type_en": "Sedan (Full-size)",
     "body_type_th": "รถยนต์นั่งส่วนบุคคลไม่เกิน 7 คน",
     "details": "",
-    "visible": 1,
-    "active": 1
+    "visible": true,
+    "active": true,
   },
   {
     "id": 9,
@@ -82,8 +82,8 @@ export const mockVehicleBodyTypes: VehicleBodyType[] = [
     "body_type_en": "Sedan (Sport)",
     "body_type_th": "รถยนต์นั่งส่วนบุคคลไม่เกิน 7 คน",
     "details": "",
-    "visible": 1,
-    "active": 1
+    "visible": true,
+    "active": true,
   },
   {
     "id": 10,
@@ -91,7 +91,7 @@ export const mockVehicleBodyTypes: VehicleBodyType[] = [
     "body_type_en": "Sedan (Standard)",
     "body_type_th": "รถยนต์นั่งส่วนบุคคลไม่เกิน 7 คน",
     "details": "",
-    "visible": 1,
-    "active": 1
+    "visible": true,
+    "active": true,
   }
 ]

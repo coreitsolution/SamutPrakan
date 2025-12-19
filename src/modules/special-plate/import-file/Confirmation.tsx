@@ -95,9 +95,9 @@ const Confirmation: React.FC<ConfirmationProps> = ({setFinalDataList, filesDataL
         case_owner_phone: data.case_owner_phone,
         image: data.image,
         file: data.file,
-        visible: 1,
+        visible: true,
         activeString: status?.status || t('text.data-not-found'),
-        active: status?.id || 0,
+        active: status?.id === 1 ? true : false,
         imagesUploadedData: matchedImage,
         fileUploadedData: matchedFile,
         cannotImport: !region || !plateType || !status

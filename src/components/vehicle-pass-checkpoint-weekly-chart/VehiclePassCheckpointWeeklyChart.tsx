@@ -28,10 +28,13 @@ const VehiclePassCheckpointWeeklyChart: React.FC<VehiclePassCheckpointWeeklyChar
   // i18n
   const { i18n } = useTranslation();
 
-  const renderCustomizedLabel = (props: LabelProps & { total_vehicle?: number }) => {
-    const { x, y, width, value, total_vehicle } = props;
+  const renderCustomizedLabel = (props: LabelProps & { index?: number }) => {
+    const { x, y, width, value, index } = props;
 
-    if (!total_vehicle || total_vehicle === 0) return null;
+    const item = index !== undefined ? data[index] : null;
+    const total_vehicle = item?.total_vehicle ?? 0;
+
+    if (total_vehicle === 0) return null;
 
     if (x == null || y == null || width == null || String(value) === "") {
       return null;

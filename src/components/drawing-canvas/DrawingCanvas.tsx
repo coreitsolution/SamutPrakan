@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react"
 
 // Types
-import { Mask } from "./types"
+import { Mask, Point } from "./types"
 import {
   Camera
 } from '../../features/types'
@@ -22,41 +22,66 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
   selectedRow,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const [points, setPoints] = useState<{ x: number; y: number }[]>([])
+  const [points, setPoints] = useState<Point[]>([])
   const [shapeClosed, setShapeClosed] = useState(false)
 
   const radiusThreshold = 5
 
-  const handleCanvasClick = (event: React.MouseEvent) => {
-    if (!isDrawingEnabled) return
+  const canvasToImagePoint = (x: number, y: number): Point => {
+    const scaleX = imgRef.naturalWidth / imgRef.width
+    const scaleY = imgRef.naturalHeight / imgRef.height
 
-    const rect = canvasRef.current?.getBoundingClientRect()
-    if (!rect) return
-
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
-
-    setPoints((prevPoints) => [...prevPoints, { x, y }])
+    return {
+      x: x * scaleX,
+      y: y * scaleY,
+    }
   }
 
-  const arePointsClose = (p1: { x: number; y: number }, p2: { x: number; y: number }) => {
-    const distance = Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
+  const imageToCanvasPoint = (p: Point): Point => {
+    const scaleX = imgRef.width / imgRef.naturalWidth
+    const scaleY = imgRef.height / imgRef.naturalHeight
+
+    return {
+      x: p.x * scaleX,
+      y: p.y * scaleY,
+    }
+  }
+
+  const handleCanvasClick = (event: React.MouseEvent) => {
+    if (!isDrawingEnabled || !canvasRef.current) return
+
+    const rect = canvasRef.current.getBoundingClientRect()
+    const canvasX = event.clientX - rect.left
+    const canvasY = event.clientY - rect.top
+
+    const imagePoint = canvasToImagePoint(canvasX, canvasY)
+    setPoints(prev => [...prev, imagePoint])
+  }
+
+  const arePointsClose = (p1: Point, p2: Point) => {
+    const c1 = imageToCanvasPoint(p1)
+    const c2 = imageToCanvasPoint(p2)
+    const distance = Math.hypot(c1.x - c2.x, c1.y - c2.y)
     return distance <= radiusThreshold
   }
 
+  /** Load saved detection area */
   useEffect(() => {
-    if (selectedRow?.detection_area && selectedRow?.detection_area !== "" && selectedRow?.detection_area.trim() !== "{}") {
-      const detectionArea:Mask  = JSON.parse(selectedRow?.detection_area)
+    if (
+      selectedRow?.detection_area &&
+      selectedRow.detection_area.trim() !== "{}"
+    ) {
+      const detectionArea: Mask = JSON.parse(selectedRow.detection_area)
       setPoints(detectionArea.points)
     }
   }, [selectedRow])
 
+  /** Draw canvas */
   useEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext("2d")
     if (!canvas || !ctx) return
 
-    // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     if (clearCanvas) {
@@ -65,68 +90,43 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
       return
     }
 
-    // Draw the shape
-    if (points.length > 0) {
+    if (points.length === 0) return
+
+    const canvasPoints = points.map(imageToCanvasPoint)
+
+    canvasPoints.forEach((p, index) => {
       ctx.beginPath()
-      ctx.moveTo(points[0].x, points[0].y)
+      ctx.arc(p.x, p.y, 3, 0, Math.PI * 2)
+      ctx.fillStyle = "#7e22ce"
+      ctx.fill()
 
-      points.forEach((point, index) => {
-        // Draw each point
+      if (index > 0) {
         ctx.beginPath()
-        ctx.arc(point.x, point.y, 3, 0, Math.PI * 2)
-        ctx.fillStyle = "#7e22ce"
-        ctx.fill()
-        ctx.closePath()
-
-        if (index > 0) {
-          ctx.beginPath()
-          ctx.moveTo(points[index - 1].x, points[index - 1].y)
-          ctx.lineTo(point.x, point.y)
-          ctx.strokeStyle = "#7e22ce"
-          ctx.lineWidth = 4
-          ctx.stroke()
-          ctx.closePath()
-        }
-      })
-
-      // Check if the first and last points are close
-      if (points.length > 2 && arePointsClose(points[0], points[points.length - 1])) {
-        ctx.beginPath()
-        ctx.moveTo(points[0].x, points[0].y)
-        
-        points.forEach((point) => {
-          ctx.lineTo(point.x, point.y)
-        })
-
-        ctx.closePath()
-        ctx.fillStyle = "rgb(239,68,68, 0.5)"
-        ctx.fill()
-        setShapeClosed(true)
+        ctx.moveTo(canvasPoints[index - 1].x, canvasPoints[index - 1].y)
+        ctx.lineTo(p.x, p.y)
+        ctx.strokeStyle = "#7e22ce"
+        ctx.lineWidth = 4
+        ctx.stroke()
       }
+    })
+
+    if (points.length > 2 && arePointsClose(points[0], points[points.length - 1])) {
+      ctx.beginPath()
+      ctx.moveTo(canvasPoints[0].x, canvasPoints[0].y)
+      canvasPoints.forEach(p => ctx.lineTo(p.x, p.y))
+      ctx.closePath()
+      ctx.fillStyle = "rgba(239,68,68,0.5)"
+      ctx.fill()
+      setShapeClosed(true)
     }
   }, [points, clearCanvas])
 
   useEffect(() => {
-    if (clearCanvas) setPoints([])
-  }, [clearCanvas])
-
-  useEffect(() => {
     if (shapeClosed && points.length > 2 && onShapeDrawn) {
-      const REAL_WIDTH = 1920;
-      const REAL_HEIGHT = 1080;
-
-      const scaleX = REAL_WIDTH / imgRef.width;
-      const scaleY = REAL_HEIGHT / imgRef.height;
-
-      const realPoints = points.map(p => ({
-        x: p.x * scaleX,
-        y: p.y * scaleY,
-      }));
-
       onShapeDrawn({
-        points: realPoints,
-        width: REAL_WIDTH,
-        height: REAL_HEIGHT,
+        points,
+        width: imgRef.naturalWidth,
+        height: imgRef.naturalHeight,
       })
       setShapeClosed(false)
     }

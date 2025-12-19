@@ -127,7 +127,7 @@ export interface OfficerPositions {
   id: number
   position_th: string
   position_en: string
-  active: number
+  active: boolean
 }
 
 export interface UserRoleResponse {
@@ -142,7 +142,7 @@ export interface UserRoleResponse {
 export interface UserRole {
   id: number
   user_role: string
-  active: number
+  active: boolean
 }
 
 export interface StatusResponse {
@@ -157,7 +157,7 @@ export interface StatusResponse {
 export interface Status {
   id: number
   status: string
-  active: number
+  active: boolean
 }
 
 export interface PrefixResponse {
@@ -176,8 +176,8 @@ export interface Prefix {
   title_th: string
   title_abbr_en: string
   title_abbr_th: string
-  visible: number
-  active: number
+  visible: boolean
+  active: boolean
 }
 
 export interface PlateTypesResponse {
@@ -193,8 +193,8 @@ export interface PlateTypes {
   id: number
   title_en: string
   title_th: string
-  visible: number
-  active: number
+  visible: boolean
+  active: boolean
 }
 
 export interface PersonResponse {
@@ -210,8 +210,8 @@ export interface PersonTypes {
   id: number
   title_en: string
   title_th: string
-  visible: number
-  active: number
+  visible: boolean
+  active: boolean
 }
 
 export interface DistrictsResponse {
@@ -295,8 +295,8 @@ export interface GeoRegion {
   region_code: string;
   region_en: string;
   region_th: string;
-  visible: number;
-  active: number;
+  visible: boolean;
+  active: boolean;
 }
 
 export interface GeoRegionResponse {
@@ -383,8 +383,8 @@ export interface StreamEncode {
   id: number
   encode_name: string
   gstreamer_format: string
-  visible: number
-  active: number
+  visible: boolean
+  active: boolean
   created_at: string
   updated_at: string
 }
@@ -413,8 +413,8 @@ export interface VehicleBodyType {
   body_type_en: string
   body_type_th: string
   details: string
-  visible: number
-  active: number
+  visible: boolean
+  active: boolean
 }
 
 export interface VehicleModelResponse {
@@ -433,6 +433,6 @@ export interface VehicleModel {
   model: string
   model_en: string
   model_th: string
-  visible: number
-  active: number
+  visible: boolean
+  active: boolean
 }

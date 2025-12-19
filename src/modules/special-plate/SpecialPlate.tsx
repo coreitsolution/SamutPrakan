@@ -57,6 +57,7 @@ import {
   FileDataResponse, 
   CheckpointResponse, 
   ZipDownloadResponse,
+  FileDataDetail,
 } from "../../features/types";
 
 dayjs.extend(buddhistEra)
@@ -119,17 +120,21 @@ const SpecialPlatePage: React.FC<SpecialPlateProps> = ({}) => {
       if (response.success) {
         const updated = await Promise.all(
           response.data.map(async (data) => {
-            await fetchSpecialPlateImages(data.uid);
-            await fetchSpecialPlateFiles(data.uid);
-            const { 
-              checkpoint_name,
-            } = await fetchCheckpointInfo(data.checkpoint_uid);
+            const [imagesData, filesData, checkpoint_name] = await Promise.all([
+              fetchSpecialPlateImages(data.uid),
+              fetchSpecialPlateFiles(data.uid),
+              fetchCheckpointInfo(data.checkpoint_uid),
+            ]);
+
             return {
               ...data,
+              imagesData,
+              filesData,
               checkpoint_name,
-            }
+            };
           })
         );
+
         setSpecialPlateList(updated);
         setTotalPages(response.pagination.maxPage);
         setTotalData(response.pagination.countAll);
@@ -150,6 +155,7 @@ const SpecialPlatePage: React.FC<SpecialPlateProps> = ({}) => {
   const fetchSpecialPlateImages = async (uid: string) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
+    let imagesData: FileDataDetail[] = [];
     try {
       const response = await fetchClient<FileDataResponse>(combineURL(CENTER_API, "/special-plate-images/get"), {
         method: "GET",
@@ -160,25 +166,24 @@ const SpecialPlatePage: React.FC<SpecialPlateProps> = ({}) => {
       })
 
       if (response.success) {
-        setSpecialPlateList((prevList) =>
-          prevList.map((item) =>
-            item.uid === uid ? { ...item, imagesData: response.data } : item
-          )
-        );
+        imagesData = response.data;
       }
     }
     catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       PopupMessage(t('message.error.error-while-fetching-image'), errorMessage, "error");
+      imagesData = [];
     }
     finally {
       clearTimeout(timeoutId);
     }
+    return imagesData;
   }
 
   const fetchSpecialPlateFiles = async (uid: string) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
+    let filesData: FileDataDetail[] = [];
     try {
       const response = await fetchClient<FileDataResponse>(combineURL(CENTER_API, "/special-plate-files/get"), {
         method: "GET",
@@ -189,27 +194,28 @@ const SpecialPlatePage: React.FC<SpecialPlateProps> = ({}) => {
       })
 
       if (response.success) {
-        setSpecialPlateList((prevList) =>
-          prevList.map((item) =>
-            item.uid === uid ? { ...item, filesData: response.data } : item
-          )
-        );
+        filesData = response.data;
       }
     }
     catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       PopupMessage(t('message.error.error-while-fetching-image'), errorMessage, "error");
+      filesData = [];
     }
     finally {
       clearTimeout(timeoutId);
     }
+    return filesData;
   }
 
   const fetchCheckpointInfo = async (checkpoint_uid: string) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
     let checkpoint_name = "";
     try {
       const response = await fetchClient<CheckpointResponse>(combineURL(CENTER_API, "/checkpoints/get"), {
         method: "GET",
+        signal: controller.signal,
         queryParams: { 
           filter: `uid:${checkpoint_uid}`
         },
@@ -218,16 +224,16 @@ const SpecialPlatePage: React.FC<SpecialPlateProps> = ({}) => {
       if (response.data && response.data.length > 0) {
         checkpoint_name = response.data[0].checkpoint_name;
       }
-
-      return {
-        checkpoint_name,
-      };
     } 
     catch (error) {
-      return {
-        checkpoint_name,
-      };
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      PopupMessage(t('message.error.error-while-fetching-image'), errorMessage, "error");
+      checkpoint_name = "";
     }
+    finally {
+      clearTimeout(timeoutId);
+    }
+    return checkpoint_name;
   }
 
   const handleImportMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -413,11 +419,8 @@ const SpecialPlatePage: React.FC<SpecialPlateProps> = ({}) => {
     if (searchFilter.region_code.trim() !== "") {
       filterParts.push(`region_code~${searchFilter.region_code}`);
     }
-    if (searchFilter.checkpoint_uid.trim() !== "" && searchFilter.checkpoint_uid !== "center") {
-      filterParts.push(`checkpoint_uid=${searchFilter.checkpoint_uid}`);
-    }
-    if (searchFilter.checkpoint_uid.trim() === "center") {
-      filterParts.push(`checkpoint_uid!=null`);
+    if (searchFilter.checkpoint_uid.length > 0 && searchFilter.checkpoint_uid[0] !== "0") {
+      filterParts.push(`checkpoint_uid=${searchFilter.checkpoint_uid.map(c => c === "center" ? "null" : c).join(",")}`);
     }
     if (searchFilter.plate_type !== 0) {
       filterParts.push(`plate_class_id=${searchFilter.plate_type}`);
@@ -601,29 +604,36 @@ const SpecialPlatePage: React.FC<SpecialPlateProps> = ({}) => {
                           <TableCell align="center" sx={{ backgroundColor: "#393B3A", color: "#FFFFFF", height: "83px" }}>
                             {
                               (() => {
-                                const color = data.active === 1 ? "bg-[#4CB64C]" : "bg-[#ADADAD]";
+                                const color = data.active ? "bg-[#4CB64C]" : "bg-[#ADADAD]";
                                 return (
                                   <label
                                     className={`w-20 h-[30px] inline-flex items-center justify-center rounded
                                     ${color}`}
                                   >
-                                    { data.active === 1 ? "Active" : "Inactive" }
+                                    { data.active ? "Active" : "Inactive" }
                                   </label>
                                 )
                               })()
                             }
                           </TableCell>
-                          <TableCell align="center" sx={{ backgroundColor: "#48494B", color: "#FFFFFF", height: "83px" }}>
-                            <IconButton
-                              sx={{
-                                borderRadius: "4px !important",
-                                cursor: data.filesData && data.filesData.length > 0 ? "pointer" : "not-allowed",
-                              }}
-                              onClick={data.filesData && data.filesData.length > 0 ? () => handleDownload(data) : undefined}
-                            >
-                              <Download color='#FFFFFF' size={25} />
-                            </IconButton>
-                          </TableCell>
+                          {
+                            (() => {
+                              const isFilesDataExist = Array.isArray(data.filesData) && data.filesData.length > 0;
+                              return (
+                                <TableCell align="center" sx={{ backgroundColor: "#48494B", color: "#FFFFFF", height: "83px" }}>
+                                  <IconButton
+                                    sx={{
+                                      borderRadius: "4px !important",
+                                      cursor: isFilesDataExist ? "pointer" : "not-allowed",
+                                    }}
+                                    onClick={isFilesDataExist ? () => handleDownload(data) : undefined}
+                                  >
+                                    <Download color={isFilesDataExist ? '#4CB64C' : '#FFFFFF'} size={25} />
+                                  </IconButton>
+                                </TableCell>
+                              )
+                            })()
+                          }
                           <TableCell align="center"
                             sx={{ backgroundColor: "#393B3A", color: "#FFFFFF", height: "83px" }}
                             className='flex justify-center items-center'
@@ -654,7 +664,7 @@ const SpecialPlatePage: React.FC<SpecialPlateProps> = ({}) => {
                     {
                       specialPlateList.length === 0 && (
                         <TableRow>
-                          <TableCell colSpan={10} align="center" sx={{ backgroundColor: "#393B3A", color: "#FFFFFF", height: "83px" }}>
+                          <TableCell colSpan={11} align="center" sx={{ backgroundColor: "#393B3A", color: "#FFFFFF", height: "83px" }}>
                             {t('text.no-data')}
                           </TableCell>
                         </TableRow>

@@ -16,8 +16,12 @@ html, body {
   overflow-y: hidden;
 }
 
-* {
+#root {
   scrollbar-color: #2B9BED #000000;
+}
+
+.MuiDialog-root * {
+  scrollbar-color: auto;
 }
 
 .hide-scrollbar::-webkit-scrollbar {

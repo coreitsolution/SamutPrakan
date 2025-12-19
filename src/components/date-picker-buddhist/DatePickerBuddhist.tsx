@@ -25,6 +25,7 @@ type CustomDatePickerProps = Omit<DatePickerProps<Dayjs>, 'value' | 'onChange'> 
   register?: any
   sx?: object
   maxDate?: Dayjs
+  slotProps?: any;
 }
 
 const DatePickerBuddhist: React.FC<CustomDatePickerProps> = ({
@@ -90,10 +91,18 @@ const DatePickerBuddhist: React.FC<CustomDatePickerProps> = ({
   const datePickerProps = {
     value: dayjsValue,
     onChange: handleDateChange,
-    slotProps: { textField: textFieldProps },
+    slotProps: { 
+      ...props.slotProps,
+      textField: textFieldProps,
+      toolbar: {
+        toolbarFormat: props.views?.includes("year") && props.views.length === 1
+                      ? "YYYY"
+                      : "D MMMM",
+      },
+    },
     ...(maxDate && { maxDate }),
     openTo: props.openTo || "day",
-    views: props.views || ["year", "month", "day"],
+    views: props.views ?? ["year", "month", "day"],
   };
 
   return (
@@ -117,12 +126,14 @@ const DatePickerBuddhist: React.FC<CustomDatePickerProps> = ({
             <DatePicker
               {...props}
               {...datePickerProps}
+              desktopModeMediaQuery="@media (min-width: 0px)"
             />
           ) : 
           (
             <DateTimePicker
               {...props as DateTimePickerProps<Dayjs>}
               {...datePickerProps}
+              desktopModeMediaQuery="@media (min-width: 0px)"
             />
           )}
       </LocalizationProvider>

@@ -132,11 +132,11 @@ function Nav() {
         ? [{ path: "/center/setting", icon: "settings", label: "settings" }]
         : []
     ),
-    ...(
-      authData?.userInfo?.permissions?.center?.manageCheckpointCameras?.select
-        ? [{ path: "/center/manage-checkpoint-cameras", icon: "manage-checkpoint-cameras", label: "manage-checkpoint-cameras" }]
-        : []
-    ),
+    // ...(
+    //   authData?.userInfo?.permissions?.center?.manageCheckpointCameras?.select
+    //     ? [{ path: "/center/manage-checkpoint-cameras", icon: "manage-checkpoint-cameras", label: "manage-checkpoint-cameras" }]
+    //     : []
+    // ),
     ...(
       authData?.userInfo?.permissions?.center?.chart?.select
         ? [
@@ -562,9 +562,13 @@ function Nav() {
           )}
         </div>
       </div>
-      <div className="fixed items-center justify-center bg-black bottom-5 left-5">
-        <p>{`Ver ${version}`}</p>
-      </div>
+      {
+        !isOpen && (
+          <div className="fixed items-center justify-center bg-black bottom-5 left-5">
+            <p>{`Ver ${version}`}</p>
+          </div>
+        )
+      }
     </nav>
   );
 }

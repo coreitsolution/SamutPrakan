@@ -782,13 +782,13 @@ const ManageCheckpointCameras: React.FC<ManageCheckpointCamerasProps> = ({}) => 
                             <TableCell sx={{ backgroundColor: "#393B3A", color: "#FFFFFF", height: "83px", textAlign: "center" }}>
                               {
                                 (() => {
-                                  const color = data.active === 1 ? "bg-[#4CB64C]" : "bg-[#ADADAD]";
+                                  const color = data.active ? "bg-[#4CB64C]" : "bg-[#ADADAD]";
                                   return (
                                     <label
                                       className={`w-20 h-[30px] inline-flex items-center justify-center rounded
                                       ${color}`}
                                     >
-                                      { data.active === 1 ? t('text.on') : t('text.off') }
+                                      { data.active ? t('text.on') : t('text.off') }
                                     </label>
                                   )
                                 })()
@@ -946,13 +946,13 @@ const ManageCheckpointCameras: React.FC<ManageCheckpointCamerasProps> = ({}) => 
                               <TableCell sx={{ backgroundColor: "#393B3A", color: "#FFFFFF", height: "83px", textAlign: "center" }}>
                                 {
                                   (() => {
-                                    const color = data.active === 1 ? "bg-[#4CB64C]" : "bg-[#ADADAD]";
+                                    const color = data.active ? "bg-[#4CB64C]" : "bg-[#ADADAD]";
                                     return (
                                       <label
                                         className={`w-20 h-[30px] inline-flex items-center justify-center rounded
                                         ${color}`}
                                       >
-                                        { data.active === 1 ? t('text.on') : t('text.off') }
+                                        { data.active ? t('text.on') : t('text.off') }
                                       </label>
                                     )
                                   })()

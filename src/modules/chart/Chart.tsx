@@ -24,6 +24,7 @@ import Divider from '@mui/material/Divider';
 
 // Components
 import Loading from "../../components/loading/Loading";
+import ChartLoading from "../../components/loading/ChartLoading";
 import MultiSelectCameras from '../../components/multi-select/MultiSelectCameras';
 import VehicleDetectPerHourChart from '../../components/vehicle-detect-per-hour-chart/VehicleDetectPerHourChart';
 import VehiclePassCheckpoint from '../../components/vehicle-pass-checkpoint/VehiclePassCheckpoint';
@@ -77,6 +78,9 @@ interface FormData {
   checkpointPassYearly: Date | null;
   checkpointPassWeeklyStart: Date | null;
   checkpointPassWeeklyEnd: Date | null;
+}
+
+interface SpecialPlateData {
   specialPlateStart: Date | null;
   specialPlateEnd: Date | null;
 }
@@ -109,6 +113,8 @@ const Chart: React.FC<ChartProps> = ({}) => {
     checkpointPassYearly: currentDate,
     checkpointPassWeeklyStart: lastWeek,
     checkpointPassWeeklyEnd: currentDate,
+  });
+  const [specialPlateData, setSpecialPlateData] = useState<SpecialPlateData>({
     specialPlateStart: currentDate,
     specialPlateEnd: currentDate,
   });
@@ -123,20 +129,25 @@ const Chart: React.FC<ChartProps> = ({}) => {
 
   // State
   const [isLoading, setIsLoading] = useState(false);
+  const [isSpecialPlateChartLoading, setIsSpecialPlateChartLoading] = useState(false);
+  const [isWeeklyChartLoading, setIsWeeklyChartLoading] = useState(false);
+  const [isMonthlyChartLoading, setIsMonthlyChartLoading] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
 
   const cameraRefreshKey = useSelector((state: RootState) => state.refresh.cameraRefreshKey);
 
   const {
     register,
-    handleSubmit,
     formState: { errors },
     setValue,
     clearErrors,
+    handleSubmit,
   } = useForm();
 
   useEffect(() => {
     setSelectedCameraObjects([{ label: t('dropdown.all'), value: "0" }]);
+    setValue("specialPlateStart", currentDate);
+    setValue("specialPlateEnd", currentDate);
   }, [])
   
   useEffect(() => {
@@ -193,18 +204,38 @@ const Chart: React.FC<ChartProps> = ({}) => {
   };
 
   const handleDateChange = async (key: keyof typeof formData, value: Date | null) => {
+    const selectCheckpoint = selectedCameraIds.map((c) => c.uid);
     if (key === "checkpointPassWeeklyStart" && value) {
       setFormData(prev => ({
         ...prev,
         checkpointPassWeeklyStart: value,
         checkpointPassWeeklyEnd: dayjs(value).add(1, "week").toDate(),
       }));
+      setIsWeeklyChartLoading(true);
+      await fetchDetectionWeekly(selectCheckpoint);
+      setTimeout(() => {
+        setIsWeeklyChartLoading(false);
+      }, 500)
+      return;
     } 
+    else if (key === "checkpointPassYearly" && value) {
+      setFormData(prev => ({ ...prev, [key]: value }));
+      setIsMonthlyChartLoading(true);
+      await fetchDetectionMonthly(selectCheckpoint);
+      setTimeout(() => {
+        setIsMonthlyChartLoading(false);
+      }, 500)
+      return;
+    }
     else {
       setFormData(prev => ({ ...prev, [key]: value }));
     }
 
     await fetchNewData(key, value);
+  };
+
+  const handleDateSpecialPlateChange = async (key: keyof typeof specialPlateData, value: Date | null) => {
+    setSpecialPlateData(prev => ({ ...prev, [key]: value }));
   };
 
   const handleClearSearch = async () => {
@@ -213,6 +244,8 @@ const Chart: React.FC<ChartProps> = ({}) => {
       checkpointPassYearly: currentDate,
       checkpointPassWeeklyStart: lastWeek,
       checkpointPassWeeklyEnd: currentDate,
+    });
+    setSpecialPlateData({
       specialPlateStart: currentDate,
       specialPlateEnd: currentDate,
     });
@@ -280,7 +313,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
           endDate: todayEnd.toISOString(),
           ...(
             selectCheckpoint.length > 0 && {
-              checkpointUids: selectCheckpoint.join(","),
+              cameraUids: selectCheckpoint.join(","),
             }
           )
         },
@@ -288,7 +321,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
 
       if (res.success) {
         const finalData = Array.from({ length: 24}).map((_, index) => {
-          const dataHourly = res.data.find(d => d.hour === index);
+          const dataHourly = res.data.find(d => (d.hour) === index);
           if (dataHourly) return dataHourly;
           return {
             hour: index,
@@ -324,7 +357,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
           ),
           ...(
             selectCheckpoint.length > 0 && {
-              checkpointUids: selectCheckpoint.join(","),
+              cameraUids: selectCheckpoint.join(","),
             }
           )
         },
@@ -335,8 +368,8 @@ const Chart: React.FC<ChartProps> = ({}) => {
           return ({
             monthFormat: i18n.language === "th" ? dayjs().month(data.month - 1).locale("th").format('MMM') : dayjs().month(data.month - 1).format('MMM'),
             total_vehicle: data.total,
-            total_black_list: data.bySpecialPlate.find(b => b.plate_class_title_en?.toLowerCase() === "blacklist")?.count || 0,
-            total_watch_list: data.bySpecialPlate.find(b => b.plate_class_title_en?.toLowerCase() === "watchlist")?.count || 0,
+            total_black_list: data.bySpecialPlate?.find(b => b.plate_class_title_en?.toLowerCase() === "blacklist")?.count || 0,
+            total_watch_list: data.bySpecialPlate?.find(b => b.plate_class_title_en?.toLowerCase() === "watchlist")?.count || 0,
             ...data,
           })
         });
@@ -385,7 +418,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
           ),
           ...(
             selectCheckpoint.length > 0 && {
-              checkpointUids: selectCheckpoint.join(","),
+              cameraUids: selectCheckpoint.join(","),
             }
           )
         },
@@ -428,7 +461,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
         queryParams: {
           ...(
             selectCheckpoint.length > 0 && {
-              checkpointUids: selectCheckpoint.join(","),
+              cameraUids: selectCheckpoint.join(","),
             }
           )
         },
@@ -475,7 +508,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
           ),
           ...(
             selectCheckpoint.length > 0 && {
-              checkpointUids: selectCheckpoint.join(","),
+              cameraUids: selectCheckpoint.join(","),
             }
           )
         },
@@ -487,10 +520,10 @@ const Chart: React.FC<ChartProps> = ({}) => {
         updateData = res.data.byPlateClass
         .map((item) => {
           if (item.plate_class_title_en?.toLowerCase() === "blacklist") {
-            return { name: "black list", value: item.count };
+            return { name: "blacklist", value: item.count };
           }
           if (item.plate_class_title_en?.toLowerCase() === "watchlist") {
-            return { name: "watch list", value: item.count };
+            return { name: "watchlist", value: item.count };
           }
           return null;
         })
@@ -498,8 +531,8 @@ const Chart: React.FC<ChartProps> = ({}) => {
 
         if (updateData.length === 0) {
           updateData = [
-            { name: "black list", value: 0 },
-            { name: "watch list", value: 0 }
+            { name: "blacklist", value: 0 },
+            { name: "watchlist", value: 0 }
           ];
         }
 
@@ -727,8 +760,8 @@ const Chart: React.FC<ChartProps> = ({}) => {
         },
         imageSpecialPlateChart: specialPlateChartImgData,
         specialPlateChartData: {
-          dateFrom: formData.specialPlateStart ? dayjs(formData.specialPlateStart).format(i18n.language === "th" ? "DD/MM/BBBB" : "DD/MM/YYYY") : "",
-          dateTo: formData.specialPlateEnd ? dayjs(formData.specialPlateEnd).format(i18n.language === "th" ? "DD/MM/BBBB" : "DD/MM/YYYY") : "",
+          dateFrom: specialPlateData.specialPlateStart ? dayjs(specialPlateData.specialPlateStart).format(i18n.language === "th" ? "DD/MM/BBBB" : "DD/MM/YYYY") : "",
+          dateTo: specialPlateData.specialPlateEnd ? dayjs(specialPlateData.specialPlateEnd).format(i18n.language === "th" ? "DD/MM/BBBB" : "DD/MM/YYYY") : "",
           total_black_list: detectionSpecialPlate[0].value,
           total_watch_list: detectionSpecialPlate[1].value,
         }
@@ -749,7 +782,11 @@ const Chart: React.FC<ChartProps> = ({}) => {
   const handleSpecialPlateChartSearch = async (data: any) => {
     const selectCheckpoint = cameraList.map((c) => c.uid);
 
+    setIsSpecialPlateChartLoading(true);
     await fetchDetectionSpecialPlates(selectCheckpoint, data.specialPlateStart, data.specialPlateEnd);
+    setTimeout(() => {
+      setIsSpecialPlateChartLoading(false);
+    }, 500)
   }
 
   return (
@@ -760,7 +797,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
 
       {/* Search Filter Part */}
       <div className='flex flex-col sm:flex-row justify-between w-full gap-5'>
-        <form onSubmit={handleSubmit(handleSearch)} className='w-full'>
+        <div className='w-full'>
           <div className='flex flex-1 w-full'>
             <div className='flex w-full gap-1'>
               <div className='flex flex-col w-full space-y-2'>
@@ -782,6 +819,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
                   variant="contained"
                   className="primary-btn"
                   startIcon={<SearchIcon />}
+                  onClick={handleSearch}
                   sx={{
                     width: t('button.search-width'),
                     height: "40px",
@@ -808,7 +846,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
               </div>
             </div>
           </div>
-        </form>
+        </div>
         {/* Export */}
         <div className='flex gap-1 items-end sm:justify-center justify-end'>
           <IconButton 
@@ -878,8 +916,9 @@ const Chart: React.FC<ChartProps> = ({}) => {
         <div className='grid grid-cols-1 xl:grid-cols-[1fr_500px_500px] gap-2'>
           {/* Vehicle Passing Checkpoint Yearly */}
           <div 
-            className='border border-[#2B9BED] xl:rounded-[0_0_0_20px]'
+            className='border border-[#2B9BED] xl:rounded-[0_0_0_20px] relative'
           >
+            { isMonthlyChartLoading && <ChartLoading /> }
             <div className='flex flex-col p-2'>
               <div className='relative flex justify-between gap-2'>
                 <div className='flex gap-2 items-start justify-start'>
@@ -905,7 +944,8 @@ const Chart: React.FC<ChartProps> = ({}) => {
           </div>
 
           {/* Vehicle Passing Checkpoint Weekly */}
-          <div className='border border-[#2B9BED]'>
+          <div className='border border-[#2B9BED] relative'>
+            { isWeeklyChartLoading && <ChartLoading /> }
             <div className='flex flex-col p-2 gap-4'>
               <div className='flex items-center justify-start gap-2'>
                 <img src={ChartIcon} alt="Chart" className='w-5 h-5' />
@@ -936,19 +976,20 @@ const Chart: React.FC<ChartProps> = ({}) => {
 
           {/* Special Plate */}
           <div 
-            className='border border-[#2B9BED] bg-white xl:rounded-[0_0_20px_0]'
+            className='border border-[#2B9BED] bg-white xl:rounded-[0_0_20px_0] relative'
           >
+            { isSpecialPlateChartLoading && <ChartLoading /> }
             <div className='flex flex-col p-2'>
               <div className='flex items-center justify-start gap-2'>
                 <img src={ChartBlueIcon} alt="Chart" className='w-5 h-5' />
                 <Typography variant="body1" color="#1A6DDF" className="font-semibold">{t('chart.special-plate')}</Typography>
               </div>
-              <form onSubmit={handleSpecialPlateChartSearch} className='flex items-center justify-center mt-2'>
+              <form onSubmit={handleSubmit(handleSpecialPlateChartSearch)} className='flex items-center justify-center mt-2'>
                 <div className='flex items-center justify-center w-[75%] gap-3'>
                   <DatePickerBuddhist 
-                    value={formData.specialPlateStart} 
+                    value={specialPlateData.specialPlateStart} 
                     onChange={(e) => {
-                      handleDateChange("specialPlateStart", e);
+                      handleDateSpecialPlateChange("specialPlateStart", e);
                       setValue("specialPlateStart", e);
                     }}
                     error={!!errors.arrest_date}
@@ -958,9 +999,9 @@ const Chart: React.FC<ChartProps> = ({}) => {
                   />
                   <Divider sx={{ borderColor: "#5F5F5F", width: "5px" }} />
                   <DatePickerBuddhist 
-                    value={formData.specialPlateEnd} 
+                    value={specialPlateData.specialPlateEnd} 
                     onChange={(e) => {
-                      handleDateChange("specialPlateEnd", e);
+                      handleDateSpecialPlateChange("specialPlateEnd", e);
                       setValue("specialPlateEnd", e);
                     }}
                     error={!!errors.arrest_date}
@@ -970,8 +1011,8 @@ const Chart: React.FC<ChartProps> = ({}) => {
                   />
                   <IconButton
                     type='submit'
+                    className='primary-btn'
                     sx={{
-                      backgroundColor: "#2B9BED",
                       borderRadius: 2,
                       height: "40px",
                       width: "40px",

@@ -1,6 +1,6 @@
 {
   "project-info": {
-    "name": "ระบบข่าวกรองการภาพทางระดับ"
+    "name": "ระบบอ่านแผ่นป้ายทะเบียนอัตโนมัติ"
   },
   "button" : {
     "search" : "ค้นหา",
@@ -145,7 +145,8 @@
     "person-type": "ประเภทบุคคล",
     "id-card-number": "หมายเลขบัตรประชาชน",
     "address": "ที่อยู่",
-    "zipcode": "รหัสไปรษณีย์"
+    "zipcode": "รหัสไปรษณีย์",
+    "select-checkpoint": "เลือก Checkpoint เพื่อซิงค์ข้อมูล"
   },
   "placeholder": {
     "checkpoint-station": "ค้นหาจุดตรวจชื่อด่าน",
@@ -217,7 +218,8 @@
     "person-type": "กรุณาเลือกประเภทบุคคล",
     "id-card-number": "กรุณาใส่หมายเลขบัตรประชาชน",
     "address": "กรุณาใส่ที่อยู่",
-    "zipcode": "กรุณาใส่รหัสไปรษณีย์"
+    "zipcode": "กรุณาใส่รหัสไปรษณีย์",
+    "select-checkpoint": "เลือก Checkpoint เพื่อซิงค์ข้อมูล"
   },
   "screen": {
     "real-time": {
@@ -379,7 +381,8 @@
       "person-type-2": "ประเภทบุคคล",
       "suspect-person-image": "รูปบุคคล",
       "zipcode": "รหัสไปรษณีย์",
-      "percentage-match": "ความแม่นยำ (%)"
+      "percentage-match": "ความแม่นยำ (%)",
+      "destination-checkpoint": "ซิงค์ไปที่"
     }
   },
   "pagination": {
@@ -529,7 +532,8 @@
       "something-wrong-occur": "มีข้อผิดพลาดเกิดขึ้น",
       "restart-engine-error": "Restart Engine ผิดพลาด: {{error}}",
       "setting-camera-error": "ไม่สามารถสร้างการตั้งค่ากล้องได้: {{error}}",
-      "user-password-invalid": "ชื่อผู้ใช้ และ/หรือ รหัสผ่านไม่ถูกต้อง!"
+      "user-password-invalid": "ชื่อผู้ใช้ และ/หรือ รหัสผ่านไม่ถูกต้อง!",
+      "error-while-download-file": "เกิดข้อผิดพลาดในการดาวน์โหลดไฟล์"
     },
     "success": {
       "save-success": "บันทึกข้อมูลสำเร็จ",

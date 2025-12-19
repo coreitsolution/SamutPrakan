@@ -8,6 +8,7 @@ import Button from "@mui/material/Button";
 // Components
 import TextBox from '../../../components/text-box/TextBox';
 import AutoComplete from '../../../components/auto-complete/AutoComplete';
+import MultiSelectCameras from '../../../components/multi-select/MultiSelectCameras';
 
 // Icons
 import CarSearchIcon from "../../../assets/icons/search-car.png";
@@ -20,7 +21,7 @@ export interface FormData {
   plate_group: string
   plate_number: string
   region_code: string
-  checkpoint_uid: string
+  checkpoint_uid: string[]
   plate_type: number
   status: number
 };
@@ -33,6 +34,9 @@ const SearchFilter: React.FC<SearchFilterProps> = ({onSearch}) => {
   // i18n
   const { t, i18n } = useTranslation();
 
+  // Data
+  const [selectedCheckpointObjects, setSelectedCheckpointObjects] = useState<{value: any, label: string}[]>([]);
+
   // Options
   const [provinceOptions, setProvinceOptions] = useState<{ label: string ,value: string }[]>([]);
   const [plateTypesOptions, setPlateTypesOptions] = useState<{ label: string ,value: number }[]>([]);
@@ -43,7 +47,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({onSearch}) => {
     plate_group: "",
     plate_number: "",
     region_code: "",
-    checkpoint_uid: "",
+    checkpoint_uid: [],
     plate_type: 0,
     status: 2,
   });
@@ -60,9 +64,9 @@ const SearchFilter: React.FC<SearchFilterProps> = ({onSearch}) => {
         label: row.checkpoint_name,
         value: row.uid,
       }));
-      setCheckpointOption([{label: t('dropdown.center'), value: "center"}, ...options]);
+      setCheckpointOption([{ label: t('dropdown.all'), value: "0" }, {label: t('dropdown.center'), value: "center"}, ...options]);
     }
-  }, [sliceDropdown.checkpoints]);
+  }, [sliceDropdown.checkpoints, i18n.language, i18n.isInitialized]);
 
   useEffect(() => {
     if (sliceDropdown.regions && sliceDropdown.regions.data) {
@@ -94,21 +98,12 @@ const SearchFilter: React.FC<SearchFilterProps> = ({onSearch}) => {
     }
   }, [sliceDropdown.status, i18n.language, i18n.isInitialized]);
 
+  useEffect(() => {
+    setSelectedCheckpointObjects([{ label: t('dropdown.all'), value: "0" }]);
+  }, [i18n.language, i18n.isInitialized])
+
   const handleDropdownChange = (key: keyof typeof formData, value: string | number) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const handleCheckpointChange = (
-    event: React.SyntheticEvent,
-    value: { value: any ,label: string } | null
-  ) => {
-    event.preventDefault();
-    if (value) {
-      handleDropdownChange("checkpoint_uid", value.value);
-    }
-    else {
-      handleDropdownChange("checkpoint_uid", '');
-    }
   };
 
   const handleProvinceChange = (
@@ -163,7 +158,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({onSearch}) => {
       plate_group: "",
       plate_number: "",
       region_code: "",
-      checkpoint_uid: "",
+      checkpoint_uid: [],
       plate_type: 0,
       status: 2,
     })
@@ -175,6 +170,31 @@ const SearchFilter: React.FC<SearchFilterProps> = ({onSearch}) => {
       lastSearchData.current = formData;
     }
   }
+
+  const handleCheckpointChange = (ids: string[]) => {
+    let newIds: string[];
+
+    if (ids.length === 0 || ids.includes("0")) {
+      newIds = ["0"];
+    } 
+    else {
+      newIds = ids;
+    }
+
+    const selectedObjects = checkpointOption.filter(c => newIds.includes(c.value));
+    setSelectedCheckpointObjects(selectedObjects);
+
+    const hasAll = selectedObjects.some((v) => v.value === "0");
+    
+    const finalCheckpoints = hasAll
+      ? checkpointOption.filter(c => c.value === "0")
+      : selectedObjects;
+
+    setFormData(prev => ({
+      ...prev,
+      checkpoint_uid: finalCheckpoints.map(c => c.value)
+    }));
+  };
 
   return (
     <div id='search-filter' className='h-screen w-[270px] pt-5'>
@@ -196,16 +216,18 @@ const SearchFilter: React.FC<SearchFilterProps> = ({onSearch}) => {
           </div>
 
           <div className='flex flex-col p-4 space-y-2 overflow-y-auto'>
-            <AutoComplete 
-              id="checkpoint-select"
-              sx={{ marginTop: "10px"}}
-              value={formData.checkpoint_uid}
-              onChange={handleCheckpointChange}
-              options={checkpointOption}
-              label={t('component.checkpoint-2')}
-              labelFontSize="15px"
-              placeholder={t('placeholder.checkpoint-2')}
-            />
+            <div className='flex flex-col w-full gap-2'>
+              <p className='text-[15px] text-white'>{t('component.checkpoint-2')}</p>
+              <div className='w-full items-center justify-center'>
+                <MultiSelectCameras 
+                  limitTags={1} 
+                  selectedValues={selectedCheckpointObjects}
+                  options={checkpointOption} 
+                  onChange={handleCheckpointChange}
+                  placeHolder={t('placeholder.checkpoint-2')}
+                />
+              </div>
+            </div>
 
             <TextBox
               sx={{ marginTop: "10px", fontSize: "15px" }}

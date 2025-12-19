@@ -33,7 +33,7 @@ const VehiclePassCheckpointYearlyChart: React.FC<VehiclePassCheckpointYearlyChar
     if (!active || !payload || payload.length === 0) return null;
 
     const item = payload[0].payload;
-    const month = item.month;
+    const monthValue = item.month;
     const total = item.total_vehicle;
     const totalBl = item.total_black_list;
     const totalWl = item.total_watch_list;
@@ -44,8 +44,8 @@ const VehiclePassCheckpointYearlyChart: React.FC<VehiclePassCheckpointYearlyChar
         <div className={`flex justify-between ${!isPrint ? "text-[#1A6DDF] text-[12px]" : "text-[#000000] text-[9px]"} font-extrabold`}>
           <p>
             {i18n.language === "th"
-              ? dayjs(month).locale("th").format("MMMM")
-              : dayjs(month).format("MMMM")}
+              ? dayjs().month(monthValue - 1).locale("th").format("MMMM")
+              : dayjs().month(monthValue - 1).format("MMMM")}
           </p>
 
           <p>{formatNumber(total)}</p>

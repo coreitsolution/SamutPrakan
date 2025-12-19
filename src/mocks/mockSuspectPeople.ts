@@ -39,8 +39,8 @@ export const mockSuspectPeople: SuspectPeople[] = [
         "updated_at": "2024-06-07T12:34:56"
       },
     ],
-    visible: 1,
-    active: 1,
+    visible: true,
+    active: true,
     notes: "",
     createdAt: "2025-01-01T08:00:00Z",
     updatedAt: "2025-01-01T08:00:00Z",

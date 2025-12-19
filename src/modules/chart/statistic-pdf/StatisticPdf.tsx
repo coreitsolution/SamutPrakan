@@ -116,7 +116,7 @@ export const generateStatisticPdfBlob = async (
           { text: `${t("pdf.checkpoint")} : `, bold: true },
           { text: data.checkpoints },
         ],
-        margin: [i18n.language === "th" ? 46 : 66, 0, 0, 15],
+        margin: [i18n.language === "th" ? 46 : 66, 0, 0, 30],
         leadingIndent: i18n.language === "th" ? -46 : -66,
       },
       // Three boxes section

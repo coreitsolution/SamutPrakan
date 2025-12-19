@@ -95,6 +95,7 @@ const ManagePermission: React.FC<ManagePermissionProps> = ({open, onClose, isCen
     // "suspiciousPersonSearch",
     "specialPlateManage",
     "specialPlateSearch",
+    "setting",
   ];
 
   // i18n

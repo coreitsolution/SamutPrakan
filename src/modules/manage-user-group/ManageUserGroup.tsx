@@ -83,6 +83,7 @@ const ManageUserGroup: React.FC<ManageUserGroupProps> = ({open, onClose, user, s
     // "suspiciousPersonSearch",
     "specialPlateManage",
     "specialPlateSearch",
+    "setting",
   ];
 
   // i18n

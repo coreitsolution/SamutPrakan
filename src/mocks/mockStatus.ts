@@ -5,11 +5,11 @@ export const mockStatus: Status[] = [
   {
     id: 1,
     status: "Active",
-    active: 1,
+    active: true,
   },
   {
     id: 0,
     status: "Inactive",
-    active: 1,
+    active: true,
   },
 ]

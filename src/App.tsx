@@ -28,7 +28,7 @@ import Setting from './modules/setting/Setting';
 // import EndUser from './modules/end-user/EndUser';
 // import CameraInstallationPoints from './modules/camera-installation-points/CameraInstallationPoints';
 // import CameraStatus from './modules/camera-status/CameraStatus';
-import ManageCheckpointCameras from './modules/manage-checkpoint-cameras/ManageCheckpointCameras';
+// import ManageCheckpointCameras from './modules/manage-checkpoint-cameras/ManageCheckpointCameras';
 
 // API
 import { clearError } from './features/auth/authSlice';
@@ -55,15 +55,15 @@ import {
 import {
   fetchSpecialPlatesThunk,
 } from "./features/special-plate/specialPlateSlice";
-import {
-  fetchSuspectPeopleThunk,
-} from "./features/suspect-people/suspectPeopleSlice";
+// import {
+//   fetchSuspectPeopleThunk,
+// } from "./features/suspect-people/suspectPeopleSlice";
 import {
   upsertRealtimeData,
   addToastMessage,
 } from './features/realtime-data/realtimeDataSlice';
 import { addListNotification, NotificationType, removeNotification } from "./features/notification/notificationSlice";
-import { triggerCameraRefresh, triggerRequestDeleteCamera } from "./features/refresh/refreshSlice";
+// import { triggerCameraRefresh, triggerRequestDeleteCamera } from "./features/refresh/refreshSlice";
 import {
   fetchVehicleCountThunk
 } from "./features/vehicle-count/VehicleCountSlice";
@@ -86,7 +86,7 @@ import { createNotificationToast } from "./utils/notification";
 import { fetchClient, combineURL } from "./utils/fetchClient";
 
 // Types
-import { SpecialPlate, EventNotifyResponse, EventNotify, Checkpoint } from "./features/types";
+import { SpecialPlate, EventNotifyResponse, EventNotify } from "./features/types";
 
 // i18n
 import { useTranslation } from "react-i18next";
@@ -227,13 +227,12 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
         limit: "100"
       }));
       fetchNotification();
-      dispatch(fetchSuspectPeopleThunk(
-        {
-          filter: "deleted=false",
-          limit: "1000"
-        }
-      ));
-      dispatch(fetchVehicleCountThunk());
+      // dispatch(fetchSuspectPeopleThunk(
+      //   {
+      //     filter: "deleted=false",
+      //     limit: "1000"
+      //   }
+      // ));
     }
   }, [dispatch, navigate, authData]);
 
@@ -281,7 +280,7 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
     dispatch(upsertRealtimeData(message));
     dispatch(fetchVehicleCountThunk(checkpointSelected.length > 0 ?
       {
-        checkpointUids: checkpointSelected.join(",")
+        cameraUids: checkpointSelected.join(",")
       } : 
       undefined
     ));
@@ -289,14 +288,16 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
     const specialPlateData = await checkSpecialPlate(message.plate_prefix, message.plate_number, message.region_code);
     
     if (!specialPlateData) return;
+
+    const specialPlateName = await getPlateClassName(specialPlateData.plate_class_id);
     
-    const { backgroundColor, title, pinBackgroundColor, showAlert, textShadow } = await getPlateTypeColor(specialPlateData.plate_class_id);
+    const { backgroundColor, title, pinBackgroundColor, showAlert, textShadow } = await getPlateTypeColor(specialPlateName);
     
     if (!showAlert) return; 
 
     const updatedData = {
       ...message,
-      plate_class_name: getPlateClassName(specialPlateData.plate_class_id),
+      plate_class_name: specialPlateName,
       special_plate_remark: specialPlateData.behavior,
       special_plate_owner_name: specialPlateData.case_owner_name,
       special_plate_owner_agency: specialPlateData.case_owner_agency,
@@ -308,63 +309,63 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
     dispatch(addToastMessage(updatedData));
   };
 
-  const handleCheckpointDataMessage = (message: Checkpoint) => {
-    createNotificationToast({
-      dispatch,
-      type: "newCheckpoint",
-      component: UpdateAlertPopup,
-      title: "alert.new-checkpoint-update",
-      content: "alert.new-checkpoint-update-content",
-      variables: { checkpointName: message.checkpoint_name || "-" },
-      messageId: message.created_at,
-      style: { minHeight: "108px", maxHeight: "108px" },
-      updateAction: () => dispatch(triggerCameraRefresh()),
-      id: message.id
-    });
-  };
+  // const handleCheckpointDataMessage = (message: Checkpoint) => {
+  //   createNotificationToast({
+  //     dispatch,
+  //     type: "newCheckpoint",
+  //     component: UpdateAlertPopup,
+  //     title: "alert.new-checkpoint-update",
+  //     content: "alert.new-checkpoint-update-content",
+  //     variables: { checkpointName: message.checkpoint_name || "-" },
+  //     messageId: message.created_at,
+  //     style: { minHeight: "108px", maxHeight: "108px" },
+  //     updateAction: () => dispatch(triggerCameraRefresh()),
+  //     id: message.id
+  //   });
+  // };
 
-  const handleCameraDataMessage = (message: any) => {
-    createNotificationToast({
-      dispatch,
-      type: "newCamera",
-      component: UpdateAlertPopup,
-      title: "alert.new-camera-update",
-      content: "alert.new-camera-update-content",
-      variables: { cameraName: message.camera_name || "-" },
-      messageId: message.timestampUtc,
-      style: { minHeight: "108px", maxHeight: "108px" },
-      updateAction: () => dispatch(triggerCameraRefresh()),
-      id: message.id
-    });
-  };
+  // const handleCameraDataMessage = (message: any) => {
+  //   createNotificationToast({
+  //     dispatch,
+  //     type: "newCamera",
+  //     component: UpdateAlertPopup,
+  //     title: "alert.new-camera-update",
+  //     content: "alert.new-camera-update-content",
+  //     variables: { cameraName: message.camera_name || "-" },
+  //     messageId: message.timestampUtc,
+  //     style: { minHeight: "108px", maxHeight: "108px" },
+  //     updateAction: () => dispatch(triggerCameraRefresh()),
+  //     id: message.id
+  //   });
+  // };
 
-  const listener = (message: any) => {
-    const isUpdatePage = location.pathname.includes('/manage-checkpoint-cameras');
+  // const listener = (message: any) => {
+  //   const isUpdatePage = location.pathname.includes('/manage-checkpoint-cameras');
 
-    createNotificationToast({
-      dispatch,
-      type: "requestDelete",
-      component: RequestDeleteCameraAlert,
-      theme: "light",
-      content: "alert.request-delete-camera-content",
-      variables: { number: message.data.all_request_count + 1 },
-      messageId: message.timestampUtc,
-      style: {
-        paddingTop: "45px",
-        minHeight: "161px",
-        maxHeight: "161px",
-      },
-      updateAction: () => {
-        if (isUpdatePage) dispatch(triggerRequestDeleteCamera());
-        else navigate("/center/manage-checkpoint-cameras", { replace: true });
-      },
-      closeAction: "closeRequestDeleteCameraAlert",
-      id: message.id
-    });
-  };
+  //   createNotificationToast({
+  //     dispatch,
+  //     type: "requestDelete",
+  //     component: RequestDeleteCameraAlert,
+  //     theme: "light",
+  //     content: "alert.request-delete-camera-content",
+  //     variables: { number: message.data.all_request_count + 1 },
+  //     messageId: message.timestampUtc,
+  //     style: {
+  //       paddingTop: "45px",
+  //       minHeight: "161px",
+  //       maxHeight: "161px",
+  //     },
+  //     updateAction: () => {
+  //       if (isUpdatePage) dispatch(triggerRequestDeleteCamera());
+  //       else navigate("/center/manage-checkpoint-cameras", { replace: true });
+  //     },
+  //     closeAction: "closeRequestDeleteCameraAlert",
+  //     id: message.id
+  //   });
+  // };
 
   const checkSpecialPlate = (platePrefix: string, plateNumber: string, region: string): SpecialPlate | undefined => {
-    const specialPlate = sliceSpecialPlate.specialPlates?.data.find(sp => sp.plate_prefix === platePrefix && sp.plate_number === plateNumber && sp.region_code === region && sp.deleted === 0 && sp.active === 1);
+    const specialPlate = sliceSpecialPlate.specialPlates?.data.find(sp => sp.plate_prefix === platePrefix && sp.plate_number === plateNumber && sp.region_code === region && sp.deleted === false && sp.active === true);
     return specialPlate
   };
 
@@ -451,29 +452,29 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
     false
   );
 
-  useSse(
-    CENTER_SERVER_SENT_EVENTS_URL,
-    CENTER_SERVER_SENT_EVENTS_TOKEN,
-    "camera-data",
-    handleCheckpointDataMessage,
-    enabled,
-  );
+  // useSse(
+  //   CENTER_SERVER_SENT_EVENTS_URL,
+  //   CENTER_SERVER_SENT_EVENTS_TOKEN,
+  //   "camera-data",
+  //   handleCheckpointDataMessage,
+  //   enabled,
+  // );
 
-  useSse(
-    CENTER_SERVER_SENT_EVENTS_URL,
-    CENTER_SERVER_SENT_EVENTS_TOKEN,
-    "checkpoint-data",
-    handleCameraDataMessage,
-    enabled,
-  );
+  // useSse(
+  //   CENTER_SERVER_SENT_EVENTS_URL,
+  //   CENTER_SERVER_SENT_EVENTS_TOKEN,
+  //   "checkpoint-data",
+  //   handleCameraDataMessage,
+  //   enabled,
+  // );
 
-  useSse(
-    CENTER_SERVER_SENT_EVENTS_URL,
-    CENTER_SERVER_SENT_EVENTS_TOKEN,
-    "delete-camera-request",
-    listener,
-    enabled,
-  );
+  // useSse(
+  //   CENTER_SERVER_SENT_EVENTS_URL,
+  //   CENTER_SERVER_SENT_EVENTS_TOKEN,
+  //   "delete-camera-request",
+  //   listener,
+  //   enabled,
+  // );
 
   return <>{children}</>;
 }
@@ -553,7 +554,7 @@ function App() {
           <Route path="center/special-plate" element={
             <ProtectedRoute
               permission={authData?.userInfo?.permissions
-              ? authData.userInfo.permissions.checkpoint.specialPlateManage.select
+              ? authData.userInfo.permissions.center.specialPlateManage.select
               : undefined
               }
             >
@@ -583,16 +584,18 @@ function App() {
               <Setting />
             </ProtectedRoute>
           }></Route>
-          <Route path='center/manage-checkpoint-cameras' element={
-            <ProtectedRoute 
-              permission={
-                authData?.userInfo?.permissions
-                ? authData.userInfo.permissions.center?.manageCheckpointCameras?.select
-                : undefined
-              }>
-              <ManageCheckpointCameras />
-            </ProtectedRoute>
-          }></Route>
+          {/*
+            <Route path='center/manage-checkpoint-cameras' element={
+              <ProtectedRoute 
+                permission={
+                  authData?.userInfo?.permissions
+                  ? authData.userInfo.permissions.center?.manageCheckpointCameras?.select
+                  : undefined
+                }>
+                <ManageCheckpointCameras />
+              </ProtectedRoute>
+            }></Route>
+          */}
           <Route path='center/chart' element={
             <ProtectedRoute 
               permission={

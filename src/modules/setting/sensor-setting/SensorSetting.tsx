@@ -96,7 +96,7 @@ const SensorSetting: React.FC<SensorSettingProps> = ({open, onClose, selectedRow
     try {
       if (selectedRow) {
         const body = {
-          uid: selectedRow.uid,
+          camera_uid: selectedRow.uid,
         }
         await fetchClient<CameraResponse>(combineURL(CENTER_API, "/cameras/reboot-engine"), {
           method: "POST",
@@ -136,7 +136,7 @@ const SensorSetting: React.FC<SensorSettingProps> = ({open, onClose, selectedRow
         }
         else {
           const body = {
-            uid: selectedRow.uid, 
+            camera_uid: selectedRow.uid, 
             height: sensorSettingData.height,
             width: sensorSettingData.width,
             points: sensorSettingData.points

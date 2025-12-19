@@ -103,8 +103,8 @@ export interface VehicleModelDetail {
   model: string;
   model_en: string;
   model_th: string;
-  visible: number;
-  active: number;
+  visible: boolean;
+  active: boolean;
 }
 
 export interface VehicleMakeDetail {
@@ -112,8 +112,8 @@ export interface VehicleMakeDetail {
   make_id: number;
   make_en: string;
   make_th: string;
-  visible: number;
-  active: number;
+  visible: boolean;
+  active: boolean;
 }
 
 export interface VehicleColorDetail {
@@ -121,8 +121,8 @@ export interface VehicleColorDetail {
   color_id: number;
   color_en: string;
   color_th: string;
-  visible: number;
-  active: number;
+  visible: boolean;
+  active: boolean;
 }
 
 export interface VehicleBodyTypeDetail {
@@ -131,8 +131,8 @@ export interface VehicleBodyTypeDetail {
   body_type_en: string;
   body_type_th: string;
   details: string;
-  visible: number;
-  active: number;
+  visible: boolean;
+  active: boolean;
 }
 
 export interface CheckpointInfo {

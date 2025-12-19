@@ -243,9 +243,9 @@ export interface SpecialPlate {
   case_owner_name: string;
   case_owner_agency: string;
   case_owner_phone: string;
-  visible: number;
-  active: number;
-  deleted: number;
+  visible: boolean;
+  active: boolean;
+  deleted: boolean;
   deleted_by_id: number;
   created_at: string;
   updated_at: string;
@@ -307,9 +307,9 @@ export interface SuspectPeople {
   case_owner_phone: string
   watchlist_images: WatchListFileData[]
   watchlist_files: WatchListFileData[]
-  visible: number
+  visible: boolean
   notes: string
-  active: number
+  active: boolean
   createdAt?: string,
   updatedAt?: string,
 }
@@ -421,9 +421,9 @@ export interface ImportSpecialPlatesDetail {
   case_owner_phone: string
   image: string
   file: string
-  visible: number
+  visible: boolean
   activeString?: string
-  active: number
+  active: boolean
   imagesUploadedData?: FileUpload
   fileUploadedData?: FileUpload
   createdAt?: string
@@ -487,10 +487,10 @@ export interface Checkpoint {
   officer_lastname: string;
   officer_position: string;
   officer_phone: string;
-  visible: number;
-  active: number;
-  deleted: number;
-  alive: number;
+  visible: boolean;
+  active: boolean;
+  deleted: boolean;
+  alive: boolean;
   last_online: string;
   last_check: string;
   created_at: string;
@@ -533,10 +533,10 @@ export interface Camera {
   wsport: number
   detection_area: string
   streaming: number
-  visible: number
-  active: number
-  deleted: number
-  alive: number
+  visible: boolean
+  active: boolean
+  deleted: boolean
+  alive: boolean
   detection_count: number
   last_online: string
   last_check: string
@@ -578,8 +578,8 @@ export interface CheckpointCamera {
   checkpoint_name: string
   latitude: string
   longitude: string
-  active: number
-  deleted: number
+  active: boolean
+  deleted: boolean
   reason: string
   created_at: string
   updated_at: string

@@ -143,7 +143,7 @@ const ManageSpecialPlate: React.FC<ManageSpecialPlateProps> = ({open, onClose, s
         case_owner_phone: ownerPhone,
         imagesData: {},
         filesData: [],
-        active_status: selectedRow.active,
+        active_status: selectedRow.active ? 1 : 0,
       });
       setValue("plate_group", selectedRow.plate_prefix);
       setValue("plate_number", selectedRow.plate_number);
@@ -663,6 +663,7 @@ const ManageSpecialPlate: React.FC<ManageSpecialPlateProps> = ({open, onClose, s
       ...prevState,
       arrest_warrant_date: date,
     }))
+    setValue("arrest_warrant_date", date)
   }
 
   const handleEndArrestDateChange = (date: Date | null) => {
@@ -670,6 +671,7 @@ const ManageSpecialPlate: React.FC<ManageSpecialPlateProps> = ({open, onClose, s
       ...prevState,
       end_arrest_date: date,
     }))
+    setValue("end_arrest_date", date)
   }
 
   const updateSpecialPlate = async (data: any) => {
@@ -698,11 +700,13 @@ const ManageSpecialPlate: React.FC<ManageSpecialPlateProps> = ({open, onClose, s
 
       if (!selectedRow) return;
 
-      const arrestDate = data.arrest_date ? dayjs(data.arrest_date).format("YYYY-MM-DD") : "";
-      const endArrestDate = data.end_arrest_date ? dayjs(data.end_arrest_date).format("YYYY-MM-DD") : "";
+      const arrestDate = data.arrest_date ? dayjs(data.arrest_date).format("YYYY-MM-DD") : null;
+      const endArrestDate = data.end_arrest_date ? dayjs(data.end_arrest_date).format("YYYY-MM-DD") : null;
+
+      const status = data.active_status === 1 ? true : false;
 
       const body = JSON.stringify({
-        id: selectedRow.id,
+        uid: selectedRow.uid,
         ...(
           data.plate_group !== selectedRow.plate_prefix && { plate_prefix: data.plate_group }
         ),
@@ -734,7 +738,7 @@ const ManageSpecialPlate: React.FC<ManageSpecialPlateProps> = ({open, onClose, s
           data.case_owner_phone && data.case_owner_phone.replaceAll("-", "").slice(0, 10) !== selectedRow.case_owner_phone && { case_owner_phone: data.case_owner_phone.replaceAll("-", "").slice(0, 10) }
         ),
         ...(
-          data.active_status !== selectedRow.active && { active: data.active_status }
+          status !== selectedRow.active && { active: status }
         ),
       })
 
@@ -834,7 +838,8 @@ const ManageSpecialPlate: React.FC<ManageSpecialPlateProps> = ({open, onClose, s
   };
   
   const isDataChanged = () => {
-    const isOnlyStatusChanged = formData.active_status !== selectedRow?.active;
+    const status = selectedRow?.active ? 1 : 0;
+    const isOnlyStatusChanged = formData.active_status !== status;
 
     const imageArray = getImagesArrayWithoutNulls(formData.imagesData).map((image) => image.url);
     const oldImageArray = selectedRow?.imagesData?.map((image) => image.url) ?? [];

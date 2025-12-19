@@ -145,7 +145,8 @@
     "person-type": "Person Type",
     "id-card-number": "National ID Card Number",
     "address": "Address",
-    "zipcode": "Zip Code"
+    "zipcode": "Zip Code",
+    "select-checkpoint": "Select a checkpoint to synchronize data"
   },
   "placeholder": {
     "checkpoint-station": "Find the checkpoint name",
@@ -217,7 +218,8 @@
     "person-type": "Please select person type",
     "id-card-number": "Please input national id card number",
     "address": "Please input address",
-    "zipcode": "Please input zip code"
+    "zipcode": "Please input zip code",
+    "select-checkpoint": "Select a checkpoint to synchronize data"
   },
   "screen": {
     "real-time": {
@@ -379,7 +381,8 @@
       "person-type-2": "Person Type",
       "suspect-person-image": "Person Image",
       "zipcode": "Zip Code",
-      "percentage-match": "Accuracy (%)"
+      "percentage-match": "Accuracy (%)",
+      "destination-checkpoint": "Sync to"
     }
   },
   "pagination": {
@@ -529,7 +532,8 @@
       "something-wrong-occur": "An error occurred.",
       "restart-engine-error": "Restart Engine error: {{error}}",
       "setting-camera-error": "Cannot create camera settings: {{error}}",
-      "user-password-invalid": "Invalid username and/or password!"
+      "user-password-invalid": "Invalid username and/or password!",
+      "error-while-download-file": "An error occurred while downloading file."
     },
     "success": {
       "save-success": "Save Successfully",

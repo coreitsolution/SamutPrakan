@@ -9,8 +9,8 @@ export const mockPrefixes: Prefix[] = [
     "title_th": "นาย",
     "title_abbr_en": "Mr.",
     "title_abbr_th": "นาย",
-    "visible": 1,
-    "active": 1
+    "visible": true,
+    "active": true,
   },
   {
       "id": 2,
@@ -19,8 +19,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "นางสาว",
       "title_abbr_en": "Miss",
       "title_abbr_th": "น.ส.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 3,
@@ -29,8 +29,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "นาง",
       "title_abbr_en": "Mrs.",
       "title_abbr_th": "นาง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 4,
@@ -39,8 +39,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "นาง/นางสาว",
       "title_abbr_en": "Ms.",
       "title_abbr_th": "นาง/น.ส.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 5,
@@ -49,8 +49,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "-",
       "title_abbr_en": "Mx.",
       "title_abbr_th": "-",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 6,
@@ -59,8 +59,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "เด็กชาย",
       "title_abbr_en": "Mstr.",
       "title_abbr_th": "ด.ช.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 7,
@@ -69,8 +69,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "เด็กหญิง",
       "title_abbr_en": "Miss",
       "title_abbr_th": "ด.ญ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 8,
@@ -79,8 +79,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ด็อกเตอร์",
       "title_abbr_en": "Dr.",
       "title_abbr_th": "ดร.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 9,
@@ -89,8 +89,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ศาสตราจารย์",
       "title_abbr_en": "Prof.",
       "title_abbr_th": "ศ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 10,
@@ -99,8 +99,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "วิศวกร",
       "title_abbr_en": "Eng.",
       "title_abbr_th": "วศ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 11,
@@ -109,8 +109,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "สถาปนิก",
       "title_abbr_en": "Arch.",
       "title_abbr_th": "สถ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 12,
@@ -119,8 +119,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ศาสนาจารย์",
       "title_abbr_en": "Rev.",
       "title_abbr_th": "ศจ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 13,
@@ -129,8 +129,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "บาทหลวง",
       "title_abbr_en": "Fr.",
       "title_abbr_th": "บาทหลวง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 14,
@@ -139,8 +139,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ศิษยาภิบาล",
       "title_abbr_en": "Pr.",
       "title_abbr_th": "ศิษยาภิบาล",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 15,
@@ -149,8 +149,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "รับบี",
       "title_abbr_en": "Rabbi",
       "title_abbr_th": "รับบี",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 16,
@@ -159,8 +159,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "อิหม่าม",
       "title_abbr_en": "Imam",
       "title_abbr_th": "อิหม่าม",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 17,
@@ -169,8 +169,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พระมหากษัตริย์",
       "title_abbr_en": "King",
       "title_abbr_th": "พระมหากษัตริย์",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 18,
@@ -179,8 +179,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พระราชินี",
       "title_abbr_en": "Queen",
       "title_abbr_th": "พระราชินี",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 19,
@@ -189,8 +189,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "เจ้าชาย",
       "title_abbr_en": "Prince",
       "title_abbr_th": "เจ้าชาย",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 20,
@@ -199,8 +199,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "เจ้าหญิง",
       "title_abbr_en": "Princess",
       "title_abbr_th": "เจ้าหญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 21,
@@ -209,8 +209,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ดยุค",
       "title_abbr_en": "Duke",
       "title_abbr_th": "ดยุค",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 22,
@@ -219,8 +219,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ดัชเชส",
       "title_abbr_en": "Duchess",
       "title_abbr_th": "ดัชเชส",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 23,
@@ -229,8 +229,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "บารอน",
       "title_abbr_en": "Baron",
       "title_abbr_th": "บารอน",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 24,
@@ -239,8 +239,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "บารอเนส",
       "title_abbr_en": "Baroness",
       "title_abbr_th": "บารอเนส",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 25,
@@ -249,8 +249,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พลเอก",
       "title_abbr_en": "Gen.",
       "title_abbr_th": "พล.อ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 26,
@@ -259,8 +259,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พลเอกหญิง",
       "title_abbr_en": "Gen. (F)",
       "title_abbr_th": "พล.อ.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 27,
@@ -269,8 +269,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พลโท",
       "title_abbr_en": "Lt. Gen.",
       "title_abbr_th": "พล.ท.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 28,
@@ -279,8 +279,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พลโทหญิง",
       "title_abbr_en": "Lt. Gen. (F)",
       "title_abbr_th": "พล.ท.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 29,
@@ -289,8 +289,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พลตรี",
       "title_abbr_en": "Maj. Gen.",
       "title_abbr_th": "พล.ต.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 30,
@@ -299,8 +299,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พลตรีหญิง",
       "title_abbr_en": "Maj. Gen. (F)",
       "title_abbr_th": "พล.ต.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 31,
@@ -309,8 +309,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พันเอก",
       "title_abbr_en": "Col.",
       "title_abbr_th": "พ.อ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 32,
@@ -319,8 +319,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พันเอกหญิง",
       "title_abbr_en": "Col. (F)",
       "title_abbr_th": "พ.อ.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 33,
@@ -329,8 +329,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พันโท",
       "title_abbr_en": "Lt. Col.",
       "title_abbr_th": "พ.ท.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 34,
@@ -339,8 +339,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พันโทหญิง",
       "title_abbr_en": "Lt. Col. (F)",
       "title_abbr_th": "พ.ท.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 35,
@@ -349,8 +349,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พันตรี",
       "title_abbr_en": "Maj.",
       "title_abbr_th": "พ.ต.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 36,
@@ -359,8 +359,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พันตรีหญิง",
       "title_abbr_en": "Maj. (F)",
       "title_abbr_th": "พ.ต.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 37,
@@ -369,8 +369,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ร้อยเอก",
       "title_abbr_en": "Capt.",
       "title_abbr_th": "ร.อ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 38,
@@ -379,8 +379,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ร้อยเอกหญิง",
       "title_abbr_en": "Capt. (F)",
       "title_abbr_th": "ร.อ.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 39,
@@ -389,8 +389,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ร้อยโท",
       "title_abbr_en": "Lt.",
       "title_abbr_th": "ร.ท.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 40,
@@ -399,8 +399,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ร้อยโทหญิง",
       "title_abbr_en": "Lt. (F)",
       "title_abbr_th": "ร.ท.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 41,
@@ -409,8 +409,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ร้อยตรี",
       "title_abbr_en": "2nd Lt.",
       "title_abbr_th": "ร.ต.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 42,
@@ -419,8 +419,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ร้อยตรีหญิง",
       "title_abbr_en": "2nd Lt. (F)",
       "title_abbr_th": "ร.ต.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 43,
@@ -429,8 +429,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "จ่าสิบเอก",
       "title_abbr_en": "Sgt. Maj.",
       "title_abbr_th": "จ.ส.อ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 44,
@@ -439,8 +439,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "จ่าสิบเอกหญิง",
       "title_abbr_en": "Sgt. Maj. (F)",
       "title_abbr_th": "จ.ส.อ.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 45,
@@ -449,8 +449,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "จ่าสิบโท",
       "title_abbr_en": "Sgt.",
       "title_abbr_th": "จ.ส.ท.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 46,
@@ -459,8 +459,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "จ่าสิบโทหญิง",
       "title_abbr_en": "Sgt. (F)",
       "title_abbr_th": "จ.ส.ท.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 47,
@@ -469,8 +469,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "สิบเอก",
       "title_abbr_en": "Cpl.",
       "title_abbr_th": "ส.อ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 48,
@@ -479,8 +479,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "สิบเอกหญิง",
       "title_abbr_en": "Cpl. (F)",
       "title_abbr_th": "ส.อ.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 49,
@@ -489,8 +489,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พลตำรวจเอก",
       "title_abbr_en": "Pol. Gen.",
       "title_abbr_th": "พล.ต.อ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 50,
@@ -499,8 +499,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พลตำรวจโท",
       "title_abbr_en": "Pol. Lt. Gen.",
       "title_abbr_th": "พล.ต.ท.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 51,
@@ -509,8 +509,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พลตำรวจโทหญิง",
       "title_abbr_en": "Pol. Lt. Gen. (F)",
       "title_abbr_th": "พล.ต.ท.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 52,
@@ -519,8 +519,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พลตำรวจตรี",
       "title_abbr_en": "Pol. Maj. Gen.",
       "title_abbr_th": "พล.ต.ต.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 53,
@@ -529,8 +529,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พลตำรวจตรีหญิง",
       "title_abbr_en": "Pol. Maj. Gen. (F)",
       "title_abbr_th": "พล.ต.ต.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 54,
@@ -539,8 +539,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พันตำรวจเอก",
       "title_abbr_en": "Pol. Col.",
       "title_abbr_th": "พ.ต.อ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 55,
@@ -549,8 +549,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พันตำรวจเอกหญิง",
       "title_abbr_en": "Pol. Col. (F)",
       "title_abbr_th": "พ.ต.อ.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 56,
@@ -559,8 +559,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พันตำรวจโท",
       "title_abbr_en": "Pol. Lt. Col.",
       "title_abbr_th": "พ.ต.ท.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 57,
@@ -569,8 +569,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พันตำรวจโทหญิง",
       "title_abbr_en": "Pol. Lt. Col. (F)",
       "title_abbr_th": "พ.ต.ท.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 58,
@@ -579,8 +579,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พันตำรวจตรี",
       "title_abbr_en": "Pol. Maj.",
       "title_abbr_th": "พ.ต.ต.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 59,
@@ -589,8 +589,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "พันตำรวจตรีหญิง",
       "title_abbr_en": "Pol. Maj. (F)",
       "title_abbr_th": "พ.ต.ต.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 60,
@@ -599,8 +599,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ร้อยตำรวจเอก",
       "title_abbr_en": "Pol. Capt.",
       "title_abbr_th": "ร.ต.อ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 61,
@@ -609,8 +609,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ร้อยตำรวจเอกหญิง",
       "title_abbr_en": "Pol. Capt. (F)",
       "title_abbr_th": "ร.ต.อ.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 62,
@@ -619,8 +619,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ร้อยตำรวจโท",
       "title_abbr_en": "Pol. Lt.",
       "title_abbr_th": "ร.ต.ท.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 63,
@@ -629,8 +629,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ร้อยตำรวจโทหญิง",
       "title_abbr_en": "Pol. Lt. (F)",
       "title_abbr_th": "ร.ต.ท.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 64,
@@ -639,8 +639,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ร้อยตำรวจตรี",
       "title_abbr_en": "Pol. 2nd Lt.",
       "title_abbr_th": "ร.ต.ต.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 65,
@@ -649,8 +649,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ร้อยตำรวจตรีหญิง",
       "title_abbr_en": "Pol. 2nd Lt. (F)",
       "title_abbr_th": "ร.ต.ต.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 66,
@@ -659,8 +659,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ดาบตำรวจ",
       "title_abbr_en": "Pol. Sgt. Maj.",
       "title_abbr_th": "ด.ต.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 67,
@@ -669,8 +669,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "ดาบตำรวจหญิง",
       "title_abbr_en": "Pol. Sgt. Maj. (F)",
       "title_abbr_th": "ด.ต.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 68,
@@ -679,8 +679,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "จ่าสิบตำรวจ",
       "title_abbr_en": "Pol. Sgt.",
       "title_abbr_th": "จ.ส.ต.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 69,
@@ -689,8 +689,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "จ่าสิบตำรวจหญิง",
       "title_abbr_en": "Pol. Sgt. (F)",
       "title_abbr_th": "จ.ส.ต.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 70,
@@ -699,8 +699,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "สิบตำรวจเอก",
       "title_abbr_en": "Pol. Cpl.",
       "title_abbr_th": "ส.ต.อ.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 71,
@@ -709,8 +709,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "สิบตำรวจเอกหญิง",
       "title_abbr_en": "Pol. Cpl. (F)",
       "title_abbr_th": "ส.ต.อ.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 72,
@@ -719,8 +719,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "สิบตำรวจโท",
       "title_abbr_en": "Pol. L/Cpl.",
       "title_abbr_th": "ส.ต.ท.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 73,
@@ -729,8 +729,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "สิบตำรวจโทหญิง",
       "title_abbr_en": "Pol. L/Cpl. (F)",
       "title_abbr_th": "ส.ต.ท.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 74,
@@ -739,8 +739,8 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "สิบตำรวจตรี",
       "title_abbr_en": "Pol. Const.",
       "title_abbr_th": "ส.ต.ต.",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   },
   {
       "id": 75,
@@ -749,7 +749,7 @@ export const mockPrefixes: Prefix[] = [
       "title_th": "สิบตำรวจตรีหญิง",
       "title_abbr_en": "Pol. Const. (F)",
       "title_abbr_th": "ส.ต.ต.หญิง",
-      "visible": 1,
-      "active": 1
+      "visible": true,
+      "active": true,
   }
 ];

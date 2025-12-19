@@ -34,7 +34,7 @@ const ProgressBarWithLabel: React.FC<ProgressBarWithLabelProps> = ({value, messa
       <img
         src="/project-logo/logo.png"
         alt="Loading Logo"
-        className="w-[10vw] h-[10vh] mb-4"
+        className="w-[7vw] h-[10vh] mb-4"
       />
       {/* Progress Bar */}
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
