@@ -45,9 +45,8 @@ import { fetchClient, combineURL } from "../../utils/fetchClient"
 import { useTranslation } from 'react-i18next';
 
 interface FormData {
-  station_id: number
   province_code: string
-  district_id: number
+  district_code: string
 }
 
 interface SearchCamerasProps {
@@ -63,9 +62,9 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
   const [isLoading, setIsLoading] = useState(false);
 
   // Options
-  const [provincesOptions, setProvincesOptions] = useState<{ label: string ,value: number }[]>([]);
-  const [districtsOptions, setDistrictsOptions] = useState<{ label: string ,value: number }[]>([]);
-  const [subDistrictsOptions, setSubDistrictsOptions] = useState<{ label: string ,value: number }[]>([]);
+  const [provincesOptions, setProvincesOptions] = useState<{ label: string ,value: string }[]>([]);
+  const [districtsOptions, setDistrictsOptions] = useState<{ label: string ,value: string }[]>([]);
+  const [subDistrictsOptions, setSubDistrictsOptions] = useState<{ label: string ,value: string }[]>([]);
   const [camerasOption, setCamerasOption] = useState<{ label: string ,value: any }[]>([]);
   
   // Data
@@ -84,9 +83,8 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
   )
   
   const [formData, setFormData] = useState<FormData>({
-    station_id: 0,
     province_code: "",
-    district_id: 0,
+    district_code: "",
   })
 
   const {
@@ -103,9 +101,9 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
 
   useEffect(() => {
     if (open) {
-      setDistrictsOptions([{ label: t('dropdown.all'), value: 0 }]);
-      setSubDistrictsOptions([{ label: t('dropdown.all'), value: 0 }]);
-      setSelectedSubDistrictObjects([{ label: t('dropdown.all'), value: 0 }]);
+      setDistrictsOptions([{ label: t('dropdown.all'), value: "0" }]);
+      setSubDistrictsOptions([{ label: t('dropdown.all'), value: "0" }]);
+      setSelectedSubDistrictObjects([{ label: t('dropdown.all'), value: "0" }]);
       setSelectedCameraObjects([{ label: t('dropdown.all'), value: "0" }]);
     }
   }, [i18n.language, open, i18n.isInitialized])
@@ -114,9 +112,9 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
     if (sliceDropdown.provinces && sliceDropdown.provinces.data) {
       const options = sliceDropdown.provinces.data.map((row) => ({
         label: i18n.language === "th" ? row.name_th : row.name_en,
-        value: row.id,
+        value: row.province_code,
       }));
-      setProvincesOptions([{ label: t('dropdown.all'), value: 0 }, ...options]);
+      setProvincesOptions([{ label: t('dropdown.all'), value: "0" }, ...options]);
     }
   }, [sliceDropdown.provinces, i18n.language, i18n.isInitialized]);
 
@@ -124,9 +122,9 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
     if (districtsList) {
       const options = districtsList.map((row) => ({
         label: i18n.language === "th" ? row.name_th : row.name_en,
-        value: row.id,
+        value: row.district_code,
       }))
-      setDistrictsOptions([{ label: t('dropdown.all'), value: 0 }, ...options])
+      setDistrictsOptions([{ label: t('dropdown.all'), value: "0" }, ...options])
     }
   }, [districtsList, i18n.language, i18n.isInitialized])
 
@@ -134,9 +132,9 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
     if (subDistrictsList) {
       const options = subDistrictsList.map((row) => ({
         label: row.name_th,
-        value: row.id,
+        value: row.subdistrict_code,
       }))
-      setSubDistrictsOptions([{ label: t('dropdown.all'), value: 0 }, ...options])
+      setSubDistrictsOptions([{ label: t('dropdown.all'), value: "0" }, ...options])
     }
   }, [subDistrictsList, i18n.language, i18n.isInitialized])
 
@@ -217,12 +215,12 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
 
   useEffect(() => {
     const fetchData = async () => {
-      if (formData.district_id) {
+      if (formData.district_code) {
         try {
           const res = await fetchClient<SubDistrictsResponse>(combineURL(CENTER_API, "/subdistricts/get"), {
             method: "GET",
             queryParams: { 
-              filter: `province_code=${formData.province_code},district_id=${formData.district_id}`,
+              filter: `province_code=${formData.province_code},district_code=${formData.district_code}`,
               limit: "100",
             },
           });
@@ -236,32 +234,32 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
       }
     };
     fetchData();
-  }, [formData.district_id]);
+  }, [formData.district_code]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const valueList = selectedSubDistrictObjects.map(sd => sd.value);
-        const hasAll = selectedSubDistrictObjects.some((v) => v.value === 0);
+        const hasAll = selectedSubDistrictObjects.some((v) => v.value === "0");
 
         const filters: string[] = [];
 
         filters.push("deleted=false");
         if (!hasAll && valueList.length > 0) {
-          filters.push(`subdistrict_id=${valueList.join("|")}`);
+          filters.push(`subdistrict_code=${valueList.join("|")}`);
         }
         if (formData.province_code) {
           filters.push(`province_code=${formData.province_code}`);
         }
-        if (formData.district_id !== 0) {
-          filters.push(`district_id=${formData.district_id}`);
+        if (formData.district_code) {
+          filters.push(`district_code=${formData.district_code}`);
         }
 
         const res = await fetchClient<CameraResponse>(combineURL(CENTER_API, "/cameras/get"), {
           method: "GET",
           queryParams: {
             filter: filters.join(","),
-            limit: "5000",
+            limit: "1000",
           },
         });
 
@@ -275,7 +273,7 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
     };
 
     fetchData();
-  }, [selectedSubDistrictObjects, formData.province_code, formData.district_id]);
+  }, [selectedSubDistrictObjects, formData.province_code, formData.district_code]);
 
   useEffect(() => {
     if (isSearching) {
@@ -308,7 +306,7 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
     else {
       handleDropdownChange("province_code", 0)
     }
-    handleDropdownChange("district_id", 0);
+    handleDropdownChange("district_code", 0);
     setSubDistrictsList([]);
   };
 
@@ -318,10 +316,10 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
   ) => {
     event.preventDefault();
     if (value) {
-      handleDropdownChange("district_id", value.value);
+      handleDropdownChange("district_code", value.value);
     }
     else {
-      handleDropdownChange("district_id", 0);
+      handleDropdownChange("district_code", 0);
     }
     setSubDistrictsList([]);
   };
@@ -344,7 +342,7 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
   }, [])
 
   const onChangeSubDistrict = (ids: string[]) => {
-    const newIds = ids.length === 0 ? [0] : ids.map(id => Number(id));
+    const newIds = ids.length === 0 ? ["0"] : ids.map(id => id);
 
     const selectedObjects = subDistrictsOptions.filter(sd => newIds.includes(sd.value));
     setSelectedSubDistrictObjects(selectedObjects);
@@ -352,9 +350,8 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
 
   const clearData = () => {
     setFormData({
-      station_id: 0,
       province_code: "",
-      district_id: 0,
+      district_code: "",
     })
     setSelectedCameraObjects([{ label: t('dropdown.all'), value: "0" }]);
     setSelectedSubDistrictObjects([]);
@@ -365,16 +362,10 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
 
   const handleSelectClick = () => {
     if (selectedCameras) {
-      const hasAll = selectedCameraObjects.some((v) => v.value === 0);
-      if (hasAll) {
-        selectedCameras([{ label: t('dropdown.all'), value: 0 }]);
-      }
-      else {
-        selectedCameras(selectedCameraObjects);
-      }
+      selectedCameras(selectedCameraObjects);
     }
     onDialogClose();
-}
+  }
 
   return (
     <Dialog open={open} maxWidth="xl" fullWidth className='relative'>
@@ -401,7 +392,7 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
           <AutoComplete 
             id="district-select"
             sx={{ marginTop: "15px"}}
-            value={formData.district_id}
+            value={formData.district_code}
             onChange={handleDistrictChange}
             options={districtsOptions}
             label={t('component.district')}
@@ -419,7 +410,7 @@ const SearchCameras: React.FC<SearchCamerasProps> = ({open, onClose, selectedCam
                 options={subDistrictsOptions} 
                 onChange={onChangeSubDistrict}
                 placeHolder={t('placeholder.sub-district')}
-                disabled={formData.district_id === 0}
+                disabled={!formData.district_code}
               />
             </div>
           </div>

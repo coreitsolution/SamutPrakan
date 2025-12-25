@@ -4,7 +4,14 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
 // Types
-import { Option } from '../features/types';
+import { 
+  Option,
+  SpecialPlate,
+  SpecialPlateResponse,
+} from '../features/types';
+import {
+  PlateTypesResponse
+} from "../features/dropdown/dropdownTypes"
 
 dayjs.extend(utc);
 
@@ -298,3 +305,12 @@ export const getWeekday = (dateString: string, i18n: any) => {
   return i18n.language === "th" ? weekdaysTh[day] : weekdaysEng[day];
 };
 
+export const checkSpecialPlate = (platePrefix: string, plateNumber: string, region: string, specialPlateList: SpecialPlateResponse | null): SpecialPlate | undefined => {
+  const specialPlate = specialPlateList?.data.find(sp => sp.plate_prefix === platePrefix && sp.plate_number === plateNumber && sp.region_code === region && sp.deleted === false && sp.active === true);
+  return specialPlate
+};
+
+export const getPlateClassName = (classId: number, plateTypeList: PlateTypesResponse | null) => {
+  const plateType = plateTypeList?.data.find(type => type.id === classId);
+  return plateType?.title_en || "-";
+}

@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { useForm } from "react-hook-form";
 import dayjs from 'dayjs'
 import buddhistEra from 'dayjs/plugin/buddhistEra'
 import { useSelector } from "react-redux"
@@ -36,7 +35,6 @@ import FeedImages from '../../components/feed-images/FeedImages';
 import {
   Camera,
   CameraResponse,
-  SpecialPlate,
   NotificationList,
   RealTimeLprData,
 } from "../../features/types";
@@ -45,7 +43,13 @@ import {
 import PinGoogleMap from "../../assets/icons/pin_google-maps.png";
 
 // Utils
-import { reformatString, getPlateTypeColor, formatNumber } from "../../utils/commonFunction";
+import { 
+  reformatString, 
+  getPlateTypeColor, 
+  formatNumber, 
+  checkSpecialPlate, 
+  getPlateClassName 
+} from "../../utils/commonFunction";
 import { fetchClient, combineURL } from "../../utils/fetchClient";
 import { PopupMessage } from '../../utils/popupMessage';
 
@@ -119,10 +123,6 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
   // const sliceSuspectPeople = useSelector((state: RootState) => state.suspectPeopleData)
   const { realtimeData } = useSelector((state: RootState) => state.realTimeData)
   const { vehicleCount } = useSelector((state: RootState) => state.vehicleCountData)
-
-  const {
-    handleSubmit,
-  } = useForm();
   
   const {
     searchSpecialCheckpoint,
@@ -151,7 +151,7 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
       if (prevCameraIds.length === 0 && hasAll) {
         setPrevCameraIds(cameraList);
       }
-      dispatch(fetchVehicleCountThunk({ cameraUids: cameraList.join(",") }));
+      dispatch(fetchVehicleCountThunk({ cameraUids: cameraList.map(c => c.uid).join(",") }));
     }
   }, [selectedCameraObjects, cameraList])
 
@@ -252,7 +252,7 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
         method: "GET",
         queryParams: {
           filter: `deleted=false`,
-          limit: "5000",
+          limit: "1000",
         },
       });
 
@@ -371,33 +371,33 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
   };
 
   const drawBaseMapPins = async (cameras: Camera[]) => {
-      // Clear previous checkpoints first
-      clearSearchPlaces();
-      
-      const data = cameras.map((camera) => {
-          const iconColor = "#FDCC0A"; // Default color
-          const isLocationWithLabel = true;
-          const isSpecialLocation = false;
+    // Clear previous checkpoints first
+    clearSearchPlaces();
+    
+    const data = cameras.map((camera) => {
+      const iconColor = "#FDCC0A"; // Default color
+      const isLocationWithLabel = true;
+      const isSpecialLocation = false;
 
-          return {
-              id: camera.id,
-              camera_uid: camera.uid,
-              camera_name: camera.camera_name,
-              plate_number: "",
-              plate_prefix: "",
-              region_code: "",
-              iconColor,
-              bgColor: iconColor,
-              textShadow: "",
-              isLocationWithLabel,
-              isSpecialLocation,
-              detectTime: "",
-              camera_latitude: camera.latitude,
-              camera_longitude: camera.longitude,
-          }
-      })
-      
-      await searchSpecialCheckpoint(data);
+      return {
+        id: camera.id,
+        camera_uid: camera.uid,
+        camera_name: camera.camera_name,
+        plate_number: "",
+        plate_prefix: "",
+        region_code: "",
+        iconColor,
+        bgColor: iconColor,
+        textShadow: "",
+        isLocationWithLabel,
+        isSpecialLocation,
+        detectTime: "",
+        camera_latitude: camera.latitude,
+        camera_longitude: camera.longitude,
+      }
+    })
+    
+    await searchSpecialCheckpoint(data);
   }
 
   const handleCameraChange = (ids: string[]) => {
@@ -416,7 +416,7 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
     setSelectedCameraIds(hasAll ? cameraList : cameraList.filter(c => newIds.includes(c.uid)));
 
     if (isSearchClicked) {
-        setIsSearchClicked(false);
+      setIsSearchClicked(false);
     }
   };
 
@@ -431,39 +431,40 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
     await drawBaseMapPins(selectedCameraIds);
   }
 
-  const handleSearch = async () => {
-    if (selectedCameraIds.length === 0) {
-      clearSearchPlaces();
+  const handleSearch = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    await executeSearch(selectedCameraIds);
+  };
+
+  const executeSearch = useCallback(async (cameraData: Camera[]) => {
+    if (cameraData.length === 0) {
+      await clearSearchPlaces();
       dispatch(setCheckpointSelected([]));
       setPrevCameraIds([]);
-      if (cameraList.length > 0) {
-        setSelectedCameraObjects([{ label: t('dropdown.all'), value: "0" }]);
-      }
+      setSelectedCameraObjects([{ label: t('dropdown.all'), value: "0" }]);
+      setIsSearchClicked(false);
       return;
     }
-    
-    setIsSearchClicked(true);
-    
-    const removedIds = prevCameraIds.filter(id => !selectedCameraIds.some(c => c.uid === id.uid));
 
-    if (removedIds.length > 0) {
-      removedIds.forEach(camera => {
-        const removedCheckpoint = cameraList.find(cp => cp.uid === camera.uid);
-        if (removedCheckpoint) {
-          const location = {
-            lat: parseFloat(removedCheckpoint.latitude),
-            lng: parseFloat(removedCheckpoint.longitude),
-          };
-          clearPlaceMarkerWithLocation(location);
-        }
+    setIsSearchClicked(true);
+
+    const removedIds = prevCameraIds.filter(
+      (prev) => !cameraData.some((curr) => curr.uid === prev.uid)
+    );
+
+    for (const camera of removedIds) {
+      clearPlaceMarkerWithLocation({
+        lat: parseFloat(camera.latitude),
+        lng: parseFloat(camera.longitude),
       });
     }
 
-    dispatch(setCheckpointSelected(selectedCameraIds.map((c) => c.uid)));
-    setPrevCameraIds(selectedCameraIds);
+    dispatch(setCheckpointSelected(cameraData.map((c) => c.uid)));
+    setPrevCameraIds(cameraData);
 
-    await drawBaseMapPins(selectedCameraIds);
-  };
+    // Refresh Map Pins
+    await drawBaseMapPins(cameraData);
+  }, [dispatch, prevCameraIds, clearSearchPlaces, clearPlaceMarkerWithLocation, t]);
 
   const handleClearSearch = async () => {
     setSelectedCameraObjects([{ label: t('dropdown.all'), value: "0" }]);
@@ -477,52 +478,43 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
     setMap(mapInstance)
   }, []);
 
-  const handleCamerasSelected = (cameraSelected: {value: any, label: string}[]) => {
-    setSelectedCameraObjects(cameraSelected);
-    
-    let newIds: string[];
-    if (cameraSelected.length === 0 || cameraSelected.some(c => c.value === "0")) {
-      newIds = ["0"];
-    } else {
-      newIds = cameraSelected.map(c => c.value);
-    }
-    
-    const hasAll = cameraSelected.some((v) => v.value === "0");
-    const updatedSelectedCameraIds = hasAll ? cameraList : cameraList.filter(c => newIds.includes(c.uid));
-    
-    setSelectedCameraIds(updatedSelectedCameraIds); 
+  const handleCamerasSelected = useCallback(async (cameraSelected: { value: any, label: string }[]) => {
+    const syncSelectedObjects = camerasOption.filter(option => 
+      cameraSelected.some(selected => selected.value === option.value)
+    );
 
-    if (updatedSelectedCameraIds.length > 0) {
-      setTimeout(() => handleSearch(), 0); 
+    const hasAll = syncSelectedObjects.some((v) => v.value === "0");
+
+    if (hasAll || syncSelectedObjects.length === 0) {
+      const allObj = camerasOption.find(o => o.value === "0") || { label: t('dropdown.all'), value: "0" };
+      setSelectedCameraObjects([allObj]);
+      setSelectedCameraIds(cameraList);
+      await executeSearch(cameraList);
     } 
     else {
-      handleSearch();
+      setSelectedCameraObjects(syncSelectedObjects);
+      
+      const filtered = cameraList.filter((c) => 
+          syncSelectedObjects.some((sc) => sc.value === c.uid)
+      );
+      setSelectedCameraIds(filtered);
+      await executeSearch(filtered);
     }
-  };
+  }, [camerasOption, cameraList, t, executeSearch]);
 
   const getProvinceName = (regionCode: string) => {
     const province = sliceDropdown.regions?.data.find(region => region.region_code === regionCode);
     return province?.name_th || "";
   }
 
-  const checkSpecialPlate = (platePrefix: string, plateNumber: string, region: string): SpecialPlate | undefined => {
-    const specialPlate = sliceSpecialPlate.specialPlates?.data.find(sp => sp.plate_prefix === platePrefix && sp.plate_number === plateNumber && sp.region_code === region && sp.deleted === false && sp.active === true);
-    return specialPlate
-  };
-
   // const checkSpecialPerson = (prefixId: number, firstName: string, lastName: string): SuspectPeople | undefined => {
   //   const suspectPerson = sliceSuspectPeople.suspectPeople?.data.find(sp => sp.title_id === prefixId && sp.firstname === firstName && sp.lastname === lastName);
   //   return suspectPerson
   // };
 
-  const getPlateClassName = (classId: number) => {
-    const plateType = sliceDropdown.plateTypes?.data.find(type => type.id === classId);
-    return plateType?.title_en || "-";
-  }
-
   const createFeedVehicleInfo = (data: RealTimeLprData, index: number) => {
-    const specialPlateData = checkSpecialPlate(data.plate_prefix, data.plate_number, data.region_code);
-    const specialPlateName = getPlateClassName(specialPlateData ? specialPlateData.plate_class_id : 0);
+    const specialPlateData = checkSpecialPlate(data.plate_prefix, data.plate_number, data.region_code, sliceSpecialPlate.specialPlates);
+    const specialPlateName = getPlateClassName(specialPlateData ? specialPlateData.plate_class_id : 0, sliceDropdown.plateTypes);
     const { color, feedBackgroundColor  } = getPlateTypeColor(specialPlateName);
     const provinceName = getProvinceName(data.region_code);
     
@@ -626,6 +618,11 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
   //   )
   // }
 
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSearch(e);
+  }
+
   return (
     <div id="real-time-monitor" className={`main-content ${isOpen ? "pl-[130px]" : "pl-2.5"} pr-2.5 transition-all duration-500`}>
       <div className='flex flex-col w-full h-full overflow-y-auto'>
@@ -634,7 +631,7 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
         
         {/* Search Filter Part */}
         <div className='flex lg:flex-row flex-col justify-between h-[100px] gap-2'>
-          <form onSubmit={handleSubmit(handleSearch)}>
+          <form onSubmit={onSubmit}>
             <div className='flex mt-3 w-full'>
               <div className='flex w-[60vw] space-x-3'>
                 <div className='flex flex-col w-full space-y-2'>
@@ -803,12 +800,14 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
           <div className='h-[75.5vh] overflow-y-auto'>
             <AnimatePresence initial={false}>
               {
-                realtimeData.map((data, index) => {
-                  // Filter by the *previously* selected cameras (prevCameraIds which holds the *searched* cameras)
-                  if (prevCameraIds.every((camera) => camera.uid !== data.camera_uid)) return null;
-                  
-                  return createFeedVehicleInfo(data, index);
-                })
+                realtimeData
+                  .filter((data) => {
+                    return prevCameraIds.some((cam) => cam.uid === data.camera_uid);
+                  })
+                  .slice(0, 20) 
+                  .map((data, index) => {
+                    return createFeedVehicleInfo(data, index)
+                  })
               }
             </AnimatePresence>
           </div>
@@ -816,11 +815,15 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
       </div>
 
       {/* Dialog */}
-      <SearchCameras 
-        open={searchCheckpointsVisible}
-        selectedCameras={handleCamerasSelected}
-        onClose={() => setSearchCheckpointsVisible(false)}
-      />
+      {
+        searchCheckpointsVisible && (
+          <SearchCameras 
+            open={searchCheckpointsVisible}
+            selectedCameras={handleCamerasSelected}
+            onClose={() => setSearchCheckpointsVisible(false)}
+          />
+        )
+      }
     </div>
   )
 }

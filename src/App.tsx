@@ -65,7 +65,8 @@ import {
 import { addListNotification, NotificationType, removeNotification } from "./features/notification/notificationSlice";
 // import { triggerCameraRefresh, triggerRequestDeleteCamera } from "./features/refresh/refreshSlice";
 import {
-  fetchVehicleCountThunk
+  fetchVehicleCountThunk,
+  setCheckpointSelected,
 } from "./features/vehicle-count/VehicleCountSlice";
 
 // Components
@@ -79,14 +80,19 @@ import CameraStatusPopup from './components/camera-status-popup/CameraStatusPopu
 import { getUrls } from './config/runtimeConfig';
 
 // utils
-import { getPlateTypeColor } from './utils/commonFunction'
+import { getPlateTypeColor, checkSpecialPlate, getPlateClassName } from './utils/commonFunction'
 import { toastChannel } from "./utils/channel";
 import { useSse } from "./utils/useSse";
 import { createNotificationToast } from "./utils/notification";
 import { fetchClient, combineURL } from "./utils/fetchClient";
+import { PopupMessage } from './utils/popupMessage';
 
 // Types
-import { SpecialPlate, EventNotifyResponse, EventNotify } from "./features/types";
+import { 
+  EventNotifyResponse, 
+  EventNotify,
+  CameraResponse
+} from "./features/types";
 
 // i18n
 import { useTranslation } from "react-i18next";
@@ -97,7 +103,7 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
   const { CENTER_SERVER_SENT_EVENTS_URL, CENTER_SERVER_SENT_EVENTS_TOKEN, CENTER_API } = getUrls();
 
   // i18n
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { authData } = useSelector((state: RootState) => state.auth);
   const { checkpointSelected } = useSelector((state: RootState) => state.vehicleCountData);
@@ -233,6 +239,7 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
       //     limit: "1000"
       //   }
       // ));
+      fetchCameraData();
     }
   }, [dispatch, navigate, authData]);
 
@@ -245,6 +252,26 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
     };
     return () => bc.close();
   }, [dispatch]);
+
+  const fetchCameraData = async () => {
+    try {
+      const res = await fetchClient<CameraResponse>(combineURL(CENTER_API, "/cameras/get"), {
+        method: "GET",
+        queryParams: {
+          filter: `deleted=false`,
+          limit: "1000",
+        },
+      });
+
+      if (res.success) {
+        dispatch(setCheckpointSelected(res.data.length > 0 ? res.data.map((c) => c.uid) : []));
+      }
+    }
+    catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      PopupMessage(t('message.error.error-while-fetching-data'), errorMessage, "error");
+    }
+  };
 
   const createCameraNotification = async (cameraData: any) => {
     const isOnline = cameraData.current_status.toString().toLowerCase() === "online" ? true : false;
@@ -285,11 +312,11 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
       undefined
     ));
 
-    const specialPlateData = await checkSpecialPlate(message.plate_prefix, message.plate_number, message.region_code);
+    const specialPlateData = await checkSpecialPlate(message.plate_prefix, message.plate_number, message.region_code, sliceSpecialPlate.specialPlates);
     
     if (!specialPlateData) return;
 
-    const specialPlateName = await getPlateClassName(specialPlateData.plate_class_id);
+    const specialPlateName = await getPlateClassName(specialPlateData.plate_class_id, sliceDropdown.plateTypes);
     
     const { backgroundColor, title, pinBackgroundColor, showAlert, textShadow } = await getPlateTypeColor(specialPlateName);
     
@@ -298,9 +325,9 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
     const updatedData = {
       ...message,
       plate_class_name: specialPlateName,
-      special_plate_remark: specialPlateData.behavior,
-      special_plate_owner_name: specialPlateData.case_owner_name,
-      special_plate_owner_agency: specialPlateData.case_owner_agency,
+      special_plate_remark: specialPlateData?.behavior || "-",
+      special_plate_owner_name: specialPlateData?.case_owner_name || "-",
+      special_plate_owner_agency: specialPlateData?.case_owner_agency || "-",
       title_name: title,
       color: backgroundColor,
       pin_background_color: pinBackgroundColor,
@@ -363,16 +390,6 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
   //     id: message.id
   //   });
   // };
-
-  const checkSpecialPlate = (platePrefix: string, plateNumber: string, region: string): SpecialPlate | undefined => {
-    const specialPlate = sliceSpecialPlate.specialPlates?.data.find(sp => sp.plate_prefix === platePrefix && sp.plate_number === plateNumber && sp.region_code === region && sp.deleted === false && sp.active === true);
-    return specialPlate
-  };
-
-  const getPlateClassName = (classId: number) => {
-    const plateType = sliceDropdown.plateTypes?.data.find(type => type.id === classId);
-    return plateType?.title_en || "-";
-  }
 
   const fetchNotification = async () => {
     const controller = new AbortController();

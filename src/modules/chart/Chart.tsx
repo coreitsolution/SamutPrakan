@@ -284,7 +284,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
         method: "GET",
         queryParams: {
           filter: `deleted=false`,
-          limit: "5000",
+          limit: "1000",
         },
       });
 

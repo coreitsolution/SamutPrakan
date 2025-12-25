@@ -378,7 +378,7 @@ const SearchPlateWithCondition: React.FC<SearchPlateWithConditionProps> = ({}) =
           method: "GET",
           queryParams: {
             filter: `${filters.join(",")}`,
-            limit: "5000",
+            limit: "1000",
           },
         });
 

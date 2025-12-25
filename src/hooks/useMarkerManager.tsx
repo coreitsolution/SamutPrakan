@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import L, { Map as LeafletMap, Marker, LatLngExpression, divIcon } from 'leaflet';
 
 // Types
@@ -7,27 +7,31 @@ import { CheckpointOnMap } from '../features/types';
 export const useMarkerManager = (map: LeafletMap | null) => {
   const [markers, setMarkers] = useState<Marker[]>([]);
 
-  const clearMarkers = () => {
-    markers.forEach((marker) => marker.remove());
-    setMarkers([]);
-  };
-
-  const clearMarkerByLocation = async (location: { lat: number; lng: number }) => {
-    const updatedMarkers = markers.filter((marker) => {
-      const markerLatLng = marker.getLatLng();
-      const isSame = 
-        markerLatLng.lat.toFixed(6) === location.lat.toFixed(6) &&
-        markerLatLng.lng.toFixed(6) === location.lng.toFixed(6);
-
-      if (isSame) {
-        marker.remove();
-        return false;
-      }
-      return true;
+  const clearMarkers = useCallback(() => {
+    setMarkers((prevMarkers) => {
+      prevMarkers.forEach((marker) => marker.remove());
+      return [];
     });
+  }, []);
 
-    setMarkers(updatedMarkers);
-  };
+  const clearMarkerByLocation = useCallback(async (location: { lat: number; lng: number }) => {
+    setMarkers((prevMarkers) => {
+      const updatedMarkers = prevMarkers.filter((marker) => {
+        const markerLatLng = marker.getLatLng();
+        
+        const isSame = 
+          markerLatLng.lat.toFixed(6) === location.lat.toFixed(6) &&
+          markerLatLng.lng.toFixed(6) === location.lng.toFixed(6);
+
+        if (isSame) {
+          marker.remove();
+          return false;
+        }
+        return true;
+      });
+      return updatedMarkers;
+    });
+  }, []);
 
 
   const createMarker = (location: LatLngExpression, color: string = "#FF0000", isLocationWithLabel: boolean = false, markerTag: string = "") => {
@@ -265,6 +269,7 @@ export const useMarkerManager = (map: LeafletMap | null) => {
 
   return {
     clearMarkers,
+    markers,
     clearMarkerByLocation,
     createMarker,
     createCountLabel,

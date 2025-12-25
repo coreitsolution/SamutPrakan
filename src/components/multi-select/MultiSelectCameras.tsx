@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 // Material UI
 import Chip from "@mui/material/Chip";
@@ -43,14 +43,6 @@ const Multiselect: React.FC<MultiselectProps> = ({
   // i18n
   const { t } = useTranslation();
 
-  const [value, setValue] = useState<{value: any, label: string}[]>([]);
-
-  useEffect(() => {
-    if (selectedValues) {
-      setValue(selectedValues);
-    }
-  }, [selectedValues]);
-
   const handleSelectionChange = (event: React.SyntheticEvent, newValue: {value: any, label: string}[]) => {
     event.stopPropagation();
     event.preventDefault();
@@ -71,7 +63,6 @@ const Multiselect: React.FC<MultiselectProps> = ({
       processedValue = processedValue.filter((v) => v.value !== "0");
     }
 
-    setValue(processedValue);
     const selectedIds = processedValue.map((option) => option.value);
     onChange(selectedIds);
 
@@ -88,7 +79,7 @@ const Multiselect: React.FC<MultiselectProps> = ({
       id="tags-demo"
       options={options}
       getOptionLabel={(option) => option.label}
-      value={value}
+      value={selectedValues}
       limitTags={limitTags}
       onChange={handleSelectionChange}
       disabled={disabled}
@@ -153,7 +144,7 @@ const Multiselect: React.FC<MultiselectProps> = ({
             ))}
 
             {numTags > limitTags && (
-              <div className="absolute top-[5px] right-[100px]">{`+${numTags - limitTags}`}</div>
+              <div className="absolute top-[5px] right-[70px]">{`+${numTags - limitTags}`}</div>
             )}
           </>
         );
@@ -166,7 +157,7 @@ const Multiselect: React.FC<MultiselectProps> = ({
             <TextField
               {...rest}
               error={error}
-              placeholder={value.length === 0 ? placeHolder || t('placeholder.checkpoint-2') : ""}
+              placeholder={selectedValues.length === 0 ? placeHolder || t('placeholder.checkpoint-2') : ""}
               slotProps={{
                 input: {
                   ...InputProps,
