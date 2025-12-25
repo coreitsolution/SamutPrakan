@@ -2,7 +2,7 @@ import './App.css';
 import { Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import Nav from "./layout/nav";
 import "./styles/Main.scss";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { useAppDispatch } from './app/hooks';
 import { useSelector } from "react-redux";
 import { RootState } from "./app/store";
@@ -66,7 +66,7 @@ import { addListNotification, NotificationType, removeNotification } from "./fea
 // import { triggerCameraRefresh, triggerRequestDeleteCamera } from "./features/refresh/refreshSlice";
 import {
   fetchVehicleCountThunk,
-  setCheckpointSelected,
+  setCameraSelected,
 } from "./features/vehicle-count/VehicleCountSlice";
 
 // Components
@@ -106,11 +106,17 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
   const { t, i18n } = useTranslation();
 
   const { authData } = useSelector((state: RootState) => state.auth);
-  const { checkpointSelected } = useSelector((state: RootState) => state.vehicleCountData);
+  const { cameraSelected } = useSelector((state: RootState) => state.vehicleCountData);
 
   const sliceSpecialPlate = useSelector((state: RootState) => state.specialPlateData);
   const sliceDropdown = useSelector((state: RootState) => state.dropdownData);
+
+  // Ref
+  const cameraSelectedRef = useRef<string[]>([]);
+  const lastFetchRef = useRef(0);
   
+  const enabled = Boolean(authData.token);
+
   toastChannel.onmessage = ({data}) => {
     const { id, toastId, messageId, action, data: updatedData } = data;
     if (action === "closeUpdateAlert" && toastId) {
@@ -253,6 +259,11 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
     return () => bc.close();
   }, [dispatch]);
 
+
+  useEffect(() => {
+    cameraSelectedRef.current = cameraSelected;
+  }, [cameraSelected]);
+
   const fetchCameraData = async () => {
     try {
       const res = await fetchClient<CameraResponse>(combineURL(CENTER_API, "/cameras/get"), {
@@ -264,7 +275,7 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
       });
 
       if (res.success) {
-        dispatch(setCheckpointSelected(res.data.length > 0 ? res.data.map((c) => c.uid) : []));
+        dispatch(setCameraSelected(res.data.length > 0 ? res.data.map((c) => c.uid) : []));
       }
     }
     catch (error) {
@@ -303,14 +314,27 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
-  const handleRealtimeMessage = async (message: any) => {   
-    dispatch(upsertRealtimeData(message));
-    dispatch(fetchVehicleCountThunk(checkpointSelected.length > 0 ?
-      {
-        cameraUids: checkpointSelected.join(",")
-      } : 
-      undefined
-    ));
+  const handleRealtimeMessage = useCallback(async (message: any) => {   
+    dispatch(upsertRealtimeData({
+      ...message,
+      detect_type: "lpr",
+    }));
+    const now = Date.now();
+
+    if (now - lastFetchRef.current > 1000) {
+      lastFetchRef.current = now;
+
+      const uids = cameraSelectedRef.current;
+
+      if (uids.length > 0) {
+        dispatch(fetchVehicleCountThunk({
+          cameraUids: uids.join(","),
+          _t: now.toString()
+        }));
+      }
+    }
+
+
 
     const specialPlateData = await checkSpecialPlate(message.plate_prefix, message.plate_number, message.region_code, sliceSpecialPlate.specialPlates);
     
@@ -334,7 +358,7 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
       text_shadow: textShadow,
     }
     dispatch(addToastMessage(updatedData));
-  };
+  }, [dispatch, sliceDropdown.plateTypes, sliceSpecialPlate.specialPlates]);
 
   // const handleCheckpointDataMessage = (message: Checkpoint) => {
   //   createNotificationToast({
@@ -449,8 +473,6 @@ const PrivateRouteWrapper = ({ children }: { children: React.ReactNode }) => {
       clearTimeout(timeoutId);
     }
   }
-
-  const enabled = Boolean(authData.token);
 
   useSse(
     CENTER_SERVER_SENT_EVENTS_URL,

@@ -70,7 +70,7 @@ import {
   updateToastMessage,
 } from '../../features/realtime-data/realtimeDataSlice';
 import {
-  setCheckpointSelected
+  setCameraSelected
 } from '../../features/vehicle-count/VehicleCountSlice';
 import {
   fetchVehicleCountThunk
@@ -425,7 +425,7 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
 
     setIsSearchClicked(true); 
     
-    dispatch(setCheckpointSelected(selectedCameraIds.map((c) => c.uid)));
+    dispatch(setCameraSelected(selectedCameraIds.map((c) => c.uid)));
     setPrevCameraIds(selectedCameraIds);
 
     await drawBaseMapPins(selectedCameraIds);
@@ -439,7 +439,7 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
   const executeSearch = useCallback(async (cameraData: Camera[]) => {
     if (cameraData.length === 0) {
       await clearSearchPlaces();
-      dispatch(setCheckpointSelected([]));
+      dispatch(setCameraSelected([]));
       setPrevCameraIds([]);
       setSelectedCameraObjects([{ label: t('dropdown.all'), value: "0" }]);
       setIsSearchClicked(false);
@@ -459,7 +459,7 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
       });
     }
 
-    dispatch(setCheckpointSelected(cameraData.map((c) => c.uid)));
+    dispatch(setCameraSelected(cameraData.map((c) => c.uid)));
     setPrevCameraIds(cameraData);
 
     // Refresh Map Pins
@@ -471,7 +471,7 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
     clearSearchPlaces();
     setIsSearchClicked(false); 
     setPrevCameraIds([]);
-    dispatch(setCheckpointSelected([]));
+    dispatch(setCameraSelected([]));
   };
 
   const handleMapLoad = useCallback((mapInstance: LeafletMap | null) => {

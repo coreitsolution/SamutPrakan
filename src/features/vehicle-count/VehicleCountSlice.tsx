@@ -13,14 +13,14 @@ import {
 
 interface VehicleCountState {
   vehicleCount: VehicleCountResponse | null;
-  checkpointSelected: string[];
+  cameraSelected: string[];
   vehicleCountStatus: Status;
   vehicleCountError: string | null;
 }
 
 const initialState: VehicleCountState = {
   vehicleCount: null,
-  checkpointSelected: [],
+  cameraSelected: [],
   vehicleCountStatus: Status.IDLE,
   vehicleCountError: null,
 }
@@ -37,8 +37,8 @@ const vehicleCountSlice = createSlice({
   name: "vehicleCount",
   initialState,
   reducers: {
-    setCheckpointSelected: (state, action: PayloadAction<string[]>) => {
-      state.checkpointSelected = action.payload;
+    setCameraSelected: (state, action: PayloadAction<string[]>) => {
+      state.cameraSelected = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -50,14 +50,19 @@ const vehicleCountSlice = createSlice({
       .addCase(fetchVehicleCountThunk.fulfilled, (state, action) => {
         state.vehicleCountStatus = Status.SUCCEEDED;
         state.vehicleCount = action.payload;
+
+        if (typeof window !== 'undefined') {
+          window.requestAnimationFrame(() => {});
+        }
       })
       .addCase(fetchVehicleCountThunk.rejected, (state, action) => {
-        state.vehicleCountStatus = Status.SUCCEEDED;
-        state.vehicleCountError = action.error.message || "Failed to fetch vehicle count";
-      })
+        state.vehicleCountStatus = Status.FAILED;
+        state.vehicleCountError =
+          action.error.message || "Failed to fetch vehicle count";
+      });
   }
 })
 
-export const { setCheckpointSelected } = vehicleCountSlice.actions;
+export const { setCameraSelected } = vehicleCountSlice.actions;
 
 export default vehicleCountSlice.reducer
