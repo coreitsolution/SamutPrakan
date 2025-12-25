@@ -19,7 +19,7 @@ import { useHamburger } from "../../context/HamburgerContext"
 
 // Icon
 import { Icon } from '../../components/icons/Icon'
-import { Plus, Pencil, Trash2, Copy } from 'lucide-react'
+import { Plus, Pencil } from 'lucide-react'
 
 // Component
 import Loading from "../../components/loading/Loading"
@@ -28,7 +28,6 @@ import Loading from "../../components/loading/Loading"
 import { 
   CameraDetailSettings,
   CameraSettings,
-  CameraSettingsData,
 } from "../../features/camera-settings/cameraSettingsTypes"
 import { 
   CheckpointResponse,
@@ -40,7 +39,7 @@ import {
 } from "../../features/dropdown/dropdownTypes";
 
 // Pop-up
-import { PopupMessage, PopupMessageWithTextInput } from "../../utils/popupMessage"
+import { PopupMessage } from "../../utils/popupMessage"
 
 // Utils
 import { formatNumber } from "../../utils/commonFunction"
@@ -226,45 +225,45 @@ const Setting = () => {
     setIsSensorSettingOpen(true)
   }
 
-  const handleCameraButtonClick = (status: boolean) => {
-    setIsEditMode(false)
-    setSelectedRow(null)
-    setIsCameraSettingOpen(status)
-  }
+  // const handleCameraButtonClick = (status: boolean) => {
+  //   setIsEditMode(false)
+  //   setSelectedRow(null)
+  //   setIsCameraSettingOpen(status)
+  // }
 
-  const handleDeleteClick = async (uid: string) => {
-    const confirm = await PopupMessageWithTextInput(
-      t('message.warning.delete-confirmation'),
-      "",
-      t('button.confirm'), 
-      t('button.cancel'), 
-      "warning", 
-      t('component.reason'), 
-      t('placeholder.reason'), 
-      "#FDB600"
-    )
+  // const handleDeleteClick = async (uid: string) => {
+  //   const confirm = await PopupMessageWithTextInput(
+  //     t('message.warning.delete-confirmation'),
+  //     "",
+  //     t('button.confirm'), 
+  //     t('button.cancel'), 
+  //     "warning", 
+  //     t('component.reason'), 
+  //     t('placeholder.reason'), 
+  //     "#FDB600"
+  //   )
 
-    if (!confirm.isConfirmed) return;
+  //   if (!confirm.isConfirmed) return;
 
-    try {
-      await fetchClient<void>(combineURL(API_URL, `/cameras/delete`), {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          uid: uid,
-          reason: confirm.inputValue,
-        }),
-      });
-      PopupMessage(t('message.success.request-delete-camera-success'), "", 'success')
-    }
-    catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      PopupMessage(t('message.error.something-wrong-occur'), t('message.error.request-delete-camera-error', { error: errorMessage}), 'error')
-    }
-    finally {
-      await fetchCamera();
-    }
-  }
+  //   try {
+  //     await fetchClient<void>(combineURL(API_URL, `/cameras/delete`), {
+  //       method: "DELETE",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ 
+  //         uid: uid,
+  //         reason: confirm.inputValue,
+  //       }),
+  //     });
+  //     PopupMessage(t('message.success.request-delete-camera-success'), "", 'success')
+  //   }
+  //   catch (error) {
+  //     const errorMessage = error instanceof Error ? error.message : String(error)
+  //     PopupMessage(t('message.error.something-wrong-occur'), t('message.error.request-delete-camera-error', { error: errorMessage}), 'error')
+  //   }
+  //   finally {
+  //     await fetchCamera();
+  //   }
+  // }
 
   const handleSensorSettingScreenClose = async () => {
     setIsSensorSettingOpen(false)
@@ -322,70 +321,70 @@ const Setting = () => {
     }, 500);
   }
 
-  const onCopySelectedClick = async () => {
-    const selectedCameras = cameraDetailSettingData.filter(item => rowSelected.includes(item.uid));
+  // const onCopySelectedClick = async () => {
+  //   const selectedCameras = cameraDetailSettingData.filter(item => rowSelected.includes(item.uid));
 
-    try {
-      for (const camera of selectedCameras) {
-        const newCamera = { 
-          ...camera, 
-          uid: undefined,
-          camera_name: camera.camera_name + "_copy",
-          latitude: camera.latitude ? Number(camera.latitude) : 0,
-          longitude: camera.longitude ? Number(camera.longitude) : 0,
-        };
-        await fetchClient<CameraSettingsData>(combineURL(API_URL, "/cameras/create"), {
-          method: "POST",
-          body: JSON.stringify(newCamera),
-        })
-      }
-    }
-    catch (error) {
-      PopupMessage(t('message.error.something-wrong-occur'),t('message.error.copy-camera-error', { error: (error as { message: string }).message || t('message.error.something-wrong-occur') }), 'error')
-      return;
-    }
-    finally {
-      setRowSelected([]);
-      await fetchCamera();
-    }
-  }
+  //   try {
+  //     for (const camera of selectedCameras) {
+  //       const newCamera = { 
+  //         ...camera, 
+  //         uid: undefined,
+  //         camera_name: camera.camera_name + "_copy",
+  //         latitude: camera.latitude ? Number(camera.latitude) : 0,
+  //         longitude: camera.longitude ? Number(camera.longitude) : 0,
+  //       };
+  //       await fetchClient<CameraSettingsData>(combineURL(API_URL, "/cameras/create"), {
+  //         method: "POST",
+  //         body: JSON.stringify(newCamera),
+  //       })
+  //     }
+  //   }
+  //   catch (error) {
+  //     PopupMessage(t('message.error.something-wrong-occur'),t('message.error.copy-camera-error', { error: (error as { message: string }).message || t('message.error.something-wrong-occur') }), 'error')
+  //     return;
+  //   }
+  //   finally {
+  //     setRowSelected([]);
+  //     await fetchCamera();
+  //   }
+  // }
 
-  const onDeleteSelectedClick = async () => {
-    const confirm = await PopupMessageWithTextInput(
-      t('message.warning.delete-confirmation'),
-      "",
-      t('button.confirm'), 
-      t('button.cancel'), 
-      "warning", 
-      t('component.reason'), 
-      t('placeholder.reason'), 
-      "#FDB600"
-    )
+  // const onDeleteSelectedClick = async () => {
+  //   const confirm = await PopupMessageWithTextInput(
+  //     t('message.warning.delete-confirmation'),
+  //     "",
+  //     t('button.confirm'), 
+  //     t('button.cancel'), 
+  //     "warning", 
+  //     t('component.reason'), 
+  //     t('placeholder.reason'), 
+  //     "#FDB600"
+  //   )
 
-    if (!confirm.isConfirmed) return;
+  //   if (!confirm.isConfirmed) return;
 
-    try {
-      for (const uid of rowSelected) {
-        await fetchClient<void>(combineURL(API_URL, `/cameras/delete`), {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            uid: uid,
-            reason: confirm.inputValue,
-          }),
-        });
-      }
-      PopupMessage(t('message.success.request-delete-camera-success'), "", 'success')
-    } 
-    catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      PopupMessage(t('message.error.something-wrong-occur'), t('message.error.request-delete-camera-error', { error: errorMessage}), 'error')
-    }
-    finally {
-      setRowSelected([]);
-      await fetchCamera();
-    }
-  }
+  //   try {
+  //     for (const uid of rowSelected) {
+  //       await fetchClient<void>(combineURL(API_URL, `/cameras/delete`), {
+  //         method: "DELETE",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ 
+  //           uid: uid,
+  //           reason: confirm.inputValue,
+  //         }),
+  //       });
+  //     }
+  //     PopupMessage(t('message.success.request-delete-camera-success'), "", 'success')
+  //   } 
+  //   catch (error) {
+  //     const errorMessage = error instanceof Error ? error.message : String(error)
+  //     PopupMessage(t('message.error.something-wrong-occur'), t('message.error.request-delete-camera-error', { error: errorMessage}), 'error')
+  //   }
+  //   finally {
+  //     setRowSelected([]);
+  //     await fetchCamera();
+  //   }
+  // }
 
   const handleCheckpointSettingClick = () => {
     setIsCheckpointSettingOpen(true);
@@ -464,7 +463,7 @@ const Setting = () => {
       <div className='mt-2'>
         <div className='flex justify-between'>
           <label className='text-[25px] text-white'>{t('text.camera-list')}</label>
-          <div className='flex gap-2'>
+          {/* <div className='flex gap-2'>
             <div 
               className={`${rowSelected.length > 0 ? "bg-dodgerBlue cursor-pointer" : "bg-nobel cursor-not-allowed"} rounded-[5px]`}
               title={t('title.copy-select-camera')}
@@ -510,7 +509,7 @@ const Setting = () => {
                 <span className='ml-[5px] text-white text-[15px]'>{t('button.delete')}</span>
               </Button>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="rounded-lg overflow-y-auto h-[68vh] mt-[15px]">
           <table className="w-full">
@@ -570,7 +569,7 @@ const Setting = () => {
                   <td className="px-4 py-2 bg-celtic flex justify-center">
                     <Button onClick={() => handleSensorSettingClick(camera)}>
                       <img 
-                        src={`/icons/sensor-setting${camera.detection_area !== "" ? "-green" : ""}.png`}
+                        src={`/icons/sensor-setting${camera.detection_area && camera.detection_area.trim() !== "{}" ? "-green" : ""}.png`}
                         style={{ height: "30px", width: "30px" }} 
                         alt="Sensor Setting" 
                       />
@@ -584,12 +583,12 @@ const Setting = () => {
                       >
                         <Icon icon={Pencil} size={20} color="white"></Icon>
                       </button>
-                      <button 
+                      {/* <button 
                         className="text-red-500 hover:text-red-700"
                         onClick={() => handleDeleteClick(camera.uid)}
                       >
                         <Icon icon={Trash2} size={20} color="white"></Icon>
-                      </button>
+                      </button> */}
                     </div>
                   </td>
                 </tr>

@@ -268,6 +268,7 @@
     "checkpoint": "ค้นหาชื่อด่าน",
     "checkpoint-2": "ค้นหาจุดตรวจ",
     "cameras": "ค้นหากล้อง",
+    "plate-character": "กรุณาใส่หมวดอักษร",
     "plate-group": "กรุณาใส่หมวดอักษร",
     "plate-number": "กรุณาใส่เลขทะเบียน",
     "province-category": "กรุณาเลือกหมวดจังหวัด",
@@ -334,7 +335,7 @@
     "zipcode": "กรุณาใส่รหัสไปรษณีย์"
   },
   "project-info": {
-    "name": "License Plate Recognition"
+    "name": "ระบบอ่านแผ่นป้ายทะเบียนอัตโนมัติ"
   },
   "screen": {
     "camera-location": "Location กล้อง",

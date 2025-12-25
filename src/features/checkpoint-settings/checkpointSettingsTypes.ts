@@ -2,6 +2,7 @@ import { Pagination } from "../types"
 
 export interface Checkpoint {
   id: number;
+  uid: string;
   checkpoint_uid?: string;
   checkpoint_name: string;
   checkpoint_ip: string;

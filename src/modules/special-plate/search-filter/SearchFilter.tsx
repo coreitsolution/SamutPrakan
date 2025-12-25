@@ -171,9 +171,9 @@ const SearchFilter: React.FC<SearchFilterProps> = ({onSearch}) => {
           <div className='flex flex-col p-4 space-y-2 overflow-y-auto'>
             <TextBox
               sx={{ marginTop: "10px", fontSize: "15px" }}
-              id="plate-group"
-              label={t('component.plate-group')}
-              placeholder={t('placeholder.plate-group')}
+              id="plate-character"
+              label={t('component.plate-character')}
+              placeholder={t('placeholder.plate-character')}
               value={formData.plate_group}
               onChange={(event) =>
                 handleTextChange("plate_group", event.target.value)

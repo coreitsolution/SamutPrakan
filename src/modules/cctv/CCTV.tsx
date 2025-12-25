@@ -26,13 +26,13 @@ import { useHamburger } from "../../context/HamburgerContext"
 
 // Icon
 // import ReplayCircleFilledIcon from '@mui/icons-material/ReplayCircleFilled';
-import { Icon } from '../../components/icons/Icon'
-import { Play, Square } from 'lucide-react'
+// import { Icon } from '../../components/icons/Icon'
+// import { Play, Square } from 'lucide-react'
 
 // Types
 import { 
   CameraDetailSettings,
-  StartStopStream,
+  // StartStopStream,
 } from "../../features/camera-settings/cameraSettingsTypes"
 import { 
   LastRecognitionData, 
@@ -61,7 +61,7 @@ const CCTV = () => {
     // TELEGRAM_CHAT_ID, 
     // TELEGRAM_URL, 
     API_URL, 
-    STREAM_URL 
+    // STREAM_URL 
   } = getUrls();
 
   const { cameraSettings } = useSelector(
@@ -83,8 +83,8 @@ const CCTV = () => {
   const [cameraSettingDropdown, setCameraSettingDropdown] = useState<{ uid: string, name: string }[]>([])
   const [dropdownVisible, setDropdownVisible] = useState<number | null>(null)
   const dropdownRefs = useRef<(HTMLDivElement | null)[]>([])
-  const startButtonRefs = useRef<(HTMLButtonElement | null)[]>([])
-  const stopButtonRefs = useRef<(HTMLButtonElement | null)[]>([])
+  // const startButtonRefs = useRef<(HTMLButtonElement | null)[]>([])
+  // const stopButtonRefs = useRef<(HTMLButtonElement | null)[]>([])
   // const restartButtonRefs = useRef<(HTMLButtonElement | null)[]>([])
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([])
   const [activeStreamUrls, setActiveStreamUrls] = useState<Record<number, { id: number, url: string, name:string}>>({})
@@ -218,37 +218,37 @@ const CCTV = () => {
   //   }
   // }, [dispatch])
 
-  const handleStartButtonClick = async (event: React.MouseEvent, index: number) => {
-    event.stopPropagation() 
+  // const handleStartButtonClick = async (event: React.MouseEvent, index: number) => {
+  //   event.stopPropagation() 
     
-    try {
-      const uid: StartStopStream = { cam_uid: cameraDetailSettingData[index].uid }
-      await fetchClient(combineURL(STREAM_URL, "/live/start"), {
-        method: "POST",
-        body: JSON.stringify(uid),
-        isStream: true,
-      })
-    }
-    catch (error) {
-      console.error(error)
-    }
-  }
+  //   try {
+  //     const uid: StartStopStream = { cam_uid: cameraDetailSettingData[index].uid }
+  //     await fetchClient(combineURL(STREAM_URL, "/live/start"), {
+  //       method: "POST",
+  //       body: JSON.stringify(uid),
+  //       isStream: true,
+  //     })
+  //   }
+  //   catch (error) {
+  //     console.error(error)
+  //   }
+  // }
 
-  const handleStopButtonClick = async (event: React.MouseEvent, index: number) => {
-    event.stopPropagation()
+  // const handleStopButtonClick = async (event: React.MouseEvent, index: number) => {
+  //   event.stopPropagation()
     
-    try {
-      const uid: StartStopStream = { cam_uid: cameraDetailSettingData[index].uid }
-      await fetchClient(combineURL(STREAM_URL, "/live/stop"), {
-        method: "POST",
-        body: JSON.stringify(uid),
-        isStream: true,
-      })
-    }
-    catch (error) {
-      console.error(error)
-    }
-  }
+  //   try {
+  //     const uid: StartStopStream = { cam_uid: cameraDetailSettingData[index].uid }
+  //     await fetchClient(combineURL(STREAM_URL, "/live/stop"), {
+  //       method: "POST",
+  //       body: JSON.stringify(uid),
+  //       isStream: true,
+  //     })
+  //   }
+  //   catch (error) {
+  //     console.error(error)
+  //   }
+  // }
 
   const handleCameraSelect = (selectedUid: string, cameraIndex: number) => {
     const selectedCamera = cameraDetailSettingData.find(
@@ -257,7 +257,7 @@ const CCTV = () => {
     if (selectedCamera) {
       setActiveStreamUrls((prevUrls) => ({
         ...prevUrls,
-        [cameraIndex]: { id: selectedCamera.alpr_camera_id, url: selectedCamera.live_stream_url, name: selectedCamera.camera_name},
+        [cameraIndex]: { id: selectedCamera.alpr_camera_id, url: selectedCamera.mjpeg_stream_url, name: selectedCamera.camera_name},
       }));
     }
     setDropdownVisible(null);
@@ -327,7 +327,7 @@ const CCTV = () => {
                     </div>
                     <div className="pb-5 flex justify-center items-center">
                       <VideoPlayer
-                        streamUrl={(activeStreamUrls[index] && activeStreamUrls[index].url) || live.live_stream_url}
+                        streamUrl={(activeStreamUrls[index] && activeStreamUrls[index].url) || live.mjpeg_stream_url}
                         id={(activeStreamUrls[index] && activeStreamUrls[index].id) || live.alpr_camera_id}
                         customClass={`${selectedScreenValue > 1 ? "h-[34vh]" : "h-[80vh]"} w-full`}
                         isMjpeg={true}
@@ -349,7 +349,7 @@ const CCTV = () => {
 
                 <div className="absolute top-0 right-0">
                   <div className='flex'>
-                    <Button
+                    {/* <Button
                       ref={(el) => (startButtonRefs.current[index] = el)}
                       onClick={(e) => handleStartButtonClick(e, index)}
                       className="relative z-10 h-[26px] bg-gradient-to-b from-dodgerBlue to-darkCerulean space-x-1"
@@ -373,7 +373,7 @@ const CCTV = () => {
                     >
                       <Icon icon={Square} size={15} color="#FFFFFF" />
                       <span className='text-[14px] text-white'>{t('button.stop-video')}</span>
-                    </Button>
+                    </Button> */}
 
                     {/* <Button
                       ref={(el) => (restartButtonRefs.current[index] = el)}

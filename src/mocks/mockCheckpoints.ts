@@ -3,6 +3,7 @@ import { Checkpoint } from '../features/checkpoint-settings/checkpointSettingsTy
 
 export const mockCheckpoint: Checkpoint = {
   id: 1,
+  uid: "uuid-1234-5678-9012",
   checkpoint_uid: "CHK-001",
   checkpoint_name: "Main City Checkpoint",
   checkpoint_ip: "192.168.1.10",

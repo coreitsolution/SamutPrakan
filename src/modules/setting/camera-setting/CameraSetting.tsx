@@ -48,7 +48,7 @@ import { DEFAULT_DETECTION_AREA } from "../../../constants/detectionArea"
 import { useTranslation } from "react-i18next";
 
 interface FormData {
-  id?: number;
+  uid?: string;
   checkpointId: string;
   isLocationSettingOpen: boolean;
   isSensorSettingOpen: boolean;
@@ -87,7 +87,7 @@ const CameraSetting: React.FC<CameraSettingProps> = ({
     null
   )
   const [formData, setFormData] = useState<FormData>({
-    id: undefined,
+    uid: undefined,
     checkpointId: "",
     isLocationSettingOpen: false,
     isSensorSettingOpen: false,
@@ -129,7 +129,7 @@ const CameraSetting: React.FC<CameraSettingProps> = ({
     if (isEditMode && selectedRow) {
       setFormData((prev) => ({
         ...prev,
-        id: selectedRow.id,
+        uid: selectedRow.uid,
         isLoading: false,
         isLocationSettingOpen: false,
         isSensorSettingOpen: false,
@@ -163,7 +163,7 @@ const CameraSetting: React.FC<CameraSettingProps> = ({
     }
     else {
       setFormData({
-        id: undefined,
+        uid: undefined,
         checkpointId: "",
         isLocationSettingOpen: false,
         isSensorSettingOpen: false,
@@ -342,7 +342,7 @@ const CameraSetting: React.FC<CameraSettingProps> = ({
 
     try {
       const body = {
-        id: selectedRow.id,
+        uid: selectedRow.uid,
         checkpoint_uid: selectedRow.checkpoint_uid,
         camera_name: data.checkpointId,
         rtsp_live_url: data.rtspLiveView,
@@ -489,7 +489,7 @@ const CameraSetting: React.FC<CameraSettingProps> = ({
 
   const clearData = () => {
     setFormData({
-      id: undefined,
+      uid: undefined,
       checkpointId: "",
       isLocationSettingOpen: false,
       isSensorSettingOpen: false,

@@ -1,4 +1,4 @@
-import React, {useState, useRef, useCallback, useEffect} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import { getUrls } from '../../../config/runtimeConfig';
 import { fetchClient, combineURL } from "../../../utils/fetchClient"
 
@@ -11,13 +11,15 @@ import Typography from "@mui/material/Typography";
 // Types
 import {
   CameraDetailSettings,
-  CameraSettingsData,
+  CameraSettingsDataResponse,
+  MaskResponse,
 } from '../../../features/camera-settings/cameraSettingsTypes'
-import { DetectionArea } from "../../../components/drawing-canvas/types"
+import { Mask } from "../../../components/drawing-canvas/types"
 
 // Components
 import TextBox from '../../../components/text-box/TextBox'
 import DrawingCanvas from '../../../components/drawing-canvas/DrawingCanvas'
+import Image from '../../../components/image/Image';
 
 // Icon
 import { Icon } from '../../../components/icons/Icon'
@@ -40,24 +42,27 @@ const SensorSetting: React.FC<SensorSettingProps> = ({open, closeDialog, selecte
   // i18n
   const { t } = useTranslation();
 
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [isDrawingEnabled, setIsDrawingEnabled] = useState(false)
   const [clearCanvas, setClearCanvas] = useState(false)
-  const [sensorSettingData, setSensorSettingData] = useState<DetectionArea | null>(null)
-  const [originalData, setOriginalData] = useState<DetectionArea | null>(null)
+  const [sensorSettingData, setSensorSettingData] = useState<Mask | null>(null)
+  const [originalData, setOriginalData] = useState<Mask | null>(null)
   const [isRestarting, setIsRestarting] = useState(false)
   const imgRef = useRef<HTMLImageElement>(null)
   const { IMAGE_URL, API_URL } = getUrls();
 
   useEffect(() => {
-    if (selectedRow) {
-      if (selectedRow.detection_area) {
+    if (open && selectedRow) {
+      setImageLoaded(false);
+      if (selectedRow.detection_area && !selectedRow.detection_area.includes("null") && selectedRow.detection_area.trim() !== "{}") {
         setSensorSettingData(JSON.parse(selectedRow.detection_area))
         setOriginalData(JSON.parse(selectedRow.detection_area))
       }
+      setIsRestarting(false);
     }
-  }, [selectedRow])
+  }, [open, selectedRow])
 
-  const handleCustomShapeDrawn = (customShape: DetectionArea) => {
+  const handleCustomShapeDrawn = (customShape: Mask) => {
     setIsDrawingEnabled(false)
     setSensorSettingData(customShape)
   }
@@ -72,7 +77,7 @@ const SensorSetting: React.FC<SensorSettingProps> = ({open, closeDialog, selecte
     return JSON.stringify(sensorSettingData ? sensorSettingData : "") !== JSON.stringify(originalData ? originalData : "")
   }
 
-  const handleSubmitClick = useCallback(async (e: React.MouseEvent<HTMLElement>) => {
+  const handleSubmitClick = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
 
     try {
@@ -86,38 +91,40 @@ const SensorSetting: React.FC<SensorSettingProps> = ({open, closeDialog, selecte
           return
         }
         else {
-          let updateData = selectedRow
-          updateData = {
-            ...selectedRow, 
-            detection_area: sensorSettingData ? JSON.stringify(sensorSettingData) : ""
+          const body = {
+            camera_uid: selectedRow.uid, 
+            height: sensorSettingData.height,
+            width: sensorSettingData.width,
+            points: sensorSettingData.points
           }
-          if (updateData) {
-            await fetchClient<CameraSettingsData>(combineURL(API_URL, "/cameras/update"), {
-              method: "PATCH",
-              body: JSON.stringify(updateData),
-            })
-            PopupMessage(t('message.success.data-saved-successfully'), t('message.success.data-saved-successfully-detail'), "success")
-          } 
-          else {
-            PopupMessage(t('message.error.something-wrong-occur'), t('message.error.please-input-all-data'), 'error')
-          }
+          await fetchClient<MaskResponse>(combineURL(API_URL, "/cameras/draw-mask"), {
+            method: "POST",
+            body: JSON.stringify(body),
+          })
+          PopupMessage(t('message.success.save-success'), t('message.success.save-success-message'), "success")
         }
       }
     } 
     catch (error) {
       PopupMessage(t('message.error.something-wrong-occur'), t('message.error.setting-camera-error', { error: error }), 'error')
     }
-  }, [sensorSettingData, selectedRow])
+  };
 
-  const onRestartClick = useCallback(async (e: React.MouseEvent<HTMLElement>) => {
+  const onRestartClick = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
     setIsRestarting(true)
     
     try {
       if (selectedRow) {
-        await fetchClient<CameraSettingsData>(combineURL(API_URL, "/cameras/update"), {
-          method: "PATCH",
-          body: JSON.stringify(selectedRow),
+        const body = {
+          uid: selectedRow.uid,
+        }
+        await fetchClient<CameraSettingsDataResponse>(combineURL(API_URL, "/cameras/reboot-engine"), {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body),
         })
         PopupMessage(t('message.success.restart-engine-success'), "", "success")
         setTimeout(() => {
@@ -129,7 +136,7 @@ const SensorSetting: React.FC<SensorSettingProps> = ({open, closeDialog, selecte
       PopupMessage(t('message.error.something-wrong-occur'), t('message.error.restart-engine-error', { error: error }), 'error')
       setIsRestarting(false)
     }
-  }, [selectedRow])
+  }
 
   return (
     <Dialog id='sensor-setting' open={open} maxWidth={false} 
@@ -194,22 +201,19 @@ const SensorSetting: React.FC<SensorSettingProps> = ({open, closeDialog, selecte
             </div>
             <div className='p-5 border-[1px] border-dodgerBlue mb-[30px]'>
               <div className='relative mb-[10px]'>
-                <img
-                  src={`${IMAGE_URL}${selectedRow?.sample_image_url}`}
-                  alt="Sensor Image"
-                  className={`w-full h-[450px]`}
+                <Image 
+                  imageSrc={`${IMAGE_URL}${selectedRow?.sample_image_url}`}
+                  imageAlt='Sensor Detect'
+                  className='w-full h-[450px]'
                   ref={imgRef}
-                  onError={(e) => {
-                    e.currentTarget.src = "/images/no-image.png"
-                    e.currentTarget.classList.add("object-cover")
-                  }}
+                  onLoad={() => setImageLoaded(true)}
                 />
                 { 
-                  !selectedRow?.sample_image_url && (
+                  (!selectedRow?.sample_image_url || selectedRow?.sample_image_url === "") && (
                     <label className='absolute inset-0 flex items-center justify-center text-black bg-white'>{t('text.camera-not-working')}</label>
                   )
                 }
-                {imgRef.current && (
+                { (imageLoaded && imgRef.current) && (
                   <DrawingCanvas
                     imgRef={imgRef.current}
                     onShapeDrawn={handleCustomShapeDrawn}

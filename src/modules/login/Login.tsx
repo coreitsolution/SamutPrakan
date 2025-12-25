@@ -9,9 +9,6 @@ import { useNavigate } from 'react-router-dom'
 // API
 import { login, clearError, userInfo } from '../../features/auth/authSlice'
 
-// Image
-import LogoImage from '/project-logo/logo.png'
-
 // Icons
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 
@@ -119,7 +116,7 @@ const LoginPage = () => {
         </select>
       </div>
       <motion.div
-        className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg border-dodgerBlue border-[1px]"
+        className="flex flex-col gap-2 w-full max-w-md p-8 bg-white rounded-xl shadow-lg border-dodgerBlue border-[1px]"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -134,7 +131,7 @@ const LoginPage = () => {
         >
           <div 
             className="bg-center bg-no-repeat bg-contain w-full min-h-[250px]" 
-            style={{ backgroundImage: `url(${LogoImage})` }}
+            style={{ backgroundImage: `url("/project-logo/logo.png")` }}
           >
           </div>
         </motion.div>
@@ -182,7 +179,7 @@ const LoginPage = () => {
                 whileTap={{ scale: 0.95 }}
                 disabled={authStatus === 'loading'}
               >
-                {authStatus === 'loading' ? 'Logging in...' : 'Login'}
+                {authStatus === 'loading' ? t('button.logging-in') : t('button.login')}
               </motion.button>
             </div>
           </form>

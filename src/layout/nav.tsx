@@ -99,24 +99,42 @@ function Nav() {
   };
 
   const navItems = [
-    { path: "/checkpoint/cctv", icon: "cctv", label: "cctv" },
-    { path: "/checkpoint/special-registration-detected", icon: "search-nav", label: "search" },
+    ...(
+      authData?.userInfo?.permissions?.checkpoint?.realtime?.select
+        ? [{ path: "/checkpoint/cctv", icon: "cctv", label: "cctv" }]
+        : []
+    ),
+    ...(
+      authData?.userInfo?.permissions?.checkpoint?.specialPlateSearch?.select
+        ? [{ path: "/checkpoint/special-registration-detected", icon: "search-nav", label: "search" }]
+        : []
+    ),
     // {
     //   path: "/checkpoint/suspect-people-detected",
     //   icon: "magnifying-glass",
     //   label: "magnifying-glass",
     // },
-    {
-      path: "/checkpoint/special-registration",
-      icon: "special-plate",
-      label: "special-plate",
-    },
+    ...(
+      authData?.userInfo?.permissions?.checkpoint?.specialPlateManage?.select
+        ? [
+          {
+            path: "/checkpoint/special-registration",
+            icon: "special-plate",
+            label: "special-plate",
+          }
+        ]
+        : []
+    ),
     // {
     //   path: "/checkpoint/special-suspect-person",
     //   icon: "order-detect-person",
     //   label: "special-suspect-person",
     // },
-    { path: "/checkpoint/settings", icon: "settings", label: "settings" },
+    ...(
+      authData?.userInfo?.permissions?.checkpoint?.setting?.select
+        ? [{ path: "/checkpoint/settings", icon: "settings", label: "settings" }]
+        : []
+    ),
     // { path: "/checkpoint/user-manage", icon: "add-user", label: "add-user" },
     // { path: "/checkpoint/chart", icon: "bar-chart", label: "bar-chart" },
   ];

@@ -37,7 +37,7 @@ import { Save } from "lucide-react"
 import { PopupMessage, PopupMessageWithCancel } from "../../../utils/popupMessage"
 
 // Utils
-import { formatPhone, getId } from "../../../utils/commonFunction"
+import { formatPhone, getStringId } from "../../../utils/commonFunction"
 
 // i18n
 import { useTranslation } from "react-i18next";
@@ -51,6 +51,7 @@ interface CheckpointSettingProps {
 
 interface FormData {
   id?: number
+  uid?: string
   checkpoint_ip: string
   checkpoint_name: string
   organization: string
@@ -80,6 +81,7 @@ const CheckpointSetting: React.FC<CheckpointSettingProps> = ({
 
   const [formData, setFormData] = useState<FormData>({
     id: undefined,
+    uid: undefined,
     checkpoint_ip: "",
     checkpoint_name: "",
     organization: "",
@@ -135,6 +137,7 @@ const CheckpointSetting: React.FC<CheckpointSettingProps> = ({
         setFormData((prev) => ({
           ...prev,
           id: checkpointData.id,
+          uid: checkpointData.uid,
           checkpoint_ip: checkpointData.checkpoint_ip,
           checkpoint_name: checkpointData.checkpoint_name,
           organization: checkpointData.organization,
@@ -255,31 +258,22 @@ const CheckpointSetting: React.FC<CheckpointSettingProps> = ({
   }
 
   const onSubmit = async (data: any) => {
+    if (isEditMode) {
+      await updateCheckpoint(data);
+    }
+    else {
+      await saveCheckpoint(data);
+    }
+  }
+
+  const saveCheckpoint = async (data: any) => {
     try {
-      if (isEditMode && !isDataChange()) {
-        PopupMessage(
-          t('message.warning.no-change-found'),
-          t('message.warning.data-not-change'),
-          "warning"
-        )
-        return;
-      }
-
-      if (isDataChange()) {
-        const confirmed = await PopupMessageWithCancel(t('message.warning.edit-confirmation'), t('message.warning.do-you-want-to-continue'), t('button.confirm'), t('button.cancel'), "warning")
-      
-        if (!confirmed) {
-          return;
-        }
-      }
-
       const body = { 
-        checkpoint_ip: "",
         checkpoint_name: data.checkpoint_name,
         organization: data.organization,
-        province_code: getId(data.province_code),
-        district_code: getId(data.district_code),
-        subdistrict_code: getId(data.subdistrict_code),
+        province_code: getStringId(data.province_code),
+        district_code: getStringId(data.district_code),
+        subdistrict_code: getStringId(data.subdistrict_code),
         route: data.route,
         latitude: parseFloat(data.latitude),
         longitude: parseFloat(data.longitude),
@@ -289,7 +283,7 @@ const CheckpointSetting: React.FC<CheckpointSettingProps> = ({
         officer_phone: data.case_owner_phone.replaceAll("-", "").slice(0, 10),
       }
 
-      const result = await fetchClient<CheckpointResponse>(combineURL(API_URL, "/checkpoints/config"), {
+      const result = await fetchClient<CheckpointResponse>(combineURL(API_URL, "/checkpoints/create"), {
         method: "POST",
         body: JSON.stringify(body),
       });
@@ -305,7 +299,82 @@ const CheckpointSetting: React.FC<CheckpointSettingProps> = ({
     catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       PopupMessage(t('message.error.something-wrong-occur'), t('message.error.setting-station-error', { error: errorMessage }), "error");
-    }    
+    }
+  }
+
+  const updateCheckpoint = async (data: any) => {
+    try {
+      if (!isDataChange()) {
+        PopupMessage(
+          t('message.warning.no-change-found'),
+          t('message.warning.data-not-change'),
+          "warning"
+        )
+        return;
+      }
+
+      const confirmed = await PopupMessageWithCancel(t('message.warning.edit-confirmation'), t('message.warning.do-you-want-to-continue'), t('button.confirm'), t('button.cancel'), "warning")
+      
+      if (!confirmed) {
+        return;
+      }
+
+      const body = { 
+        id: formData.id,
+        uid: formData.uid,
+        checkpoint_name: data.checkpoint_name,
+        ...(
+          data.organization !== formData.organization && { organization: data.organization }
+        ),
+        ...(
+          getStringId(data.province_code) !== formData.province_code && { province_code: getStringId(data.province_code) }
+        ),
+        ...(
+          getStringId(data.district_code) !== formData.district_code && { district_code: getStringId(data.district_code) }
+        ),
+        ...(
+          getStringId(data.subdistrict_code) !== formData.subdistrict_code && { subdistrict_code: getStringId(data.subdistrict_code) }
+        ),
+        ...(
+          data.route !== formData.route && { route: data.route }
+        ),
+        ...(
+          data.latitude !== formData.latitude && { latitude: parseFloat(data.latitude) }
+        ),
+        ...(
+          data.longitude !== formData.longitude && { longitude: parseFloat(data.longitude) }
+        ),
+        ...(
+          data.pcSerialNumber !== formData.pcSerialNumber && { serial_number: data.pcSerialNumber }
+        ),
+        ...(
+          data.license !== formData.license && { license_key: data.license }
+        ),
+        ...(
+          data.case_owner_name !== formData.case_owner_name && { officer_name: data.case_owner_name }
+        ),
+        ...(
+          data.case_owner_phone !== formData.case_owner_phone && { officer_phone: data.case_owner_phone.replaceAll("-", "").slice(0, 10) }
+        ),
+      }
+
+      const result = await fetchClient<CheckpointResponse>(combineURL(API_URL, "/checkpoints/update"), {
+        method: "PATCH",
+        body: JSON.stringify(body),
+      });
+
+      if (!result.status) {
+        PopupMessage(t('message.error.error-while-saving-data'), (result.message || t('message.error.something-wrong-occur')), "error")
+        return;
+      }
+
+      PopupMessage(t('message.success.data-saved-successfully'), t('message.success.data-saved-successfully-detail'), "success")
+      closeDialog();
+    } 
+    catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      PopupMessage(t('message.error.something-wrong-occur'), t('message.error.setting-station-error', { error: errorMessage }), "error");
+    }
   }
 
   const handleTextChange = (key: keyof typeof formData, value: string) => {

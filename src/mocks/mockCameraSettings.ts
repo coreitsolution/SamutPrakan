@@ -22,6 +22,7 @@ Array.from({length:10}, (_, i) => (
     "api_server_url": "http://192.168.1.177",
     "live_server_url": "http://192.168.1.177",
     "live_stream_url": "wss://192.168.1.177:10002",
+    "mjpeg_stream_url": "wss://192.168.1.177:10002",
     "wsport": 10002,
     "detection_area": null,
     "detection_count": 14590,

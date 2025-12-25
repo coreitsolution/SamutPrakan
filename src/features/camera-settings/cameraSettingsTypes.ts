@@ -1,5 +1,5 @@
 import { Officer } from "../types"
-import { CustomShape } from "../../components/drawing-canvas/types"
+import { CustomShape, Mask } from "../../components/drawing-canvas/types"
 import { StreamEncodesDetail } from "../dropdown/dropdownTypes"
 import { Pagination } from "../types"
 
@@ -75,6 +75,7 @@ export interface CameraDetailSettings {
   api_server_url: string;
   live_server_url: string;
   live_stream_url: string;
+  mjpeg_stream_url: string;
   wsport: number;
   detection_area: string | null;
   detection_count: number;
@@ -166,4 +167,12 @@ export interface CreateCameraSettings {
 
 export interface StartStopStream {
   cam_uid: string
+}
+
+export interface MaskResponse {
+  statusCode: number;
+  status: string;
+  success: boolean;
+  message: string;
+  data: Mask[];
 }
