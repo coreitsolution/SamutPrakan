@@ -420,7 +420,20 @@ const SpecialPlatePage: React.FC<SpecialPlateProps> = ({}) => {
       filterParts.push(`region_code~${searchFilter.region_code}`);
     }
     if (searchFilter.checkpoint_uid.length > 0 && searchFilter.checkpoint_uid[0] !== "0") {
-      filterParts.push(`checkpoint_uid=${searchFilter.checkpoint_uid.map(c => c === "center" ? "null" : c).join(",")}`);
+      const mapped = searchFilter.checkpoint_uid.map(c => c === "center" ? "null" : c);
+
+      const nonNull = mapped.filter(c => c !== "null");
+
+      let checkpointFilter = "";
+
+      if (nonNull.length > 0) {
+        checkpointFilter += `checkpoint_uid=${nonNull.join("|")}`;
+      }      
+
+      if (mapped.includes("null")) {
+        checkpointFilter += (checkpointFilter ? "||" : "") + `checkpoint_uid=null`;
+      }
+      filterParts.push(`${checkpointFilter}`);
     }
     if (searchFilter.plate_type !== 0) {
       filterParts.push(`plate_class_id=${searchFilter.plate_type}`);
