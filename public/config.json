@@ -6,6 +6,7 @@
   "CENTER_OSRM_URL": "http://localhost:5000",
   "CENTER_SERVER_SENT_EVENTS_URL": "https://lpr-center.local/events-agent/events",
   "CENTER_SERVER_SENT_EVENTS_TOKEN": "fKa9RnG6H9Oo3giH2-eessXsPwk0YZ3jqxcjfsA7Zrjq5YaY9eh.ibMFXcyKPSRMGU0tb-n8q4yxqBtJFeQCvLSaC7TyAay.z02wJm",
+  "CENTER_OSM_API_KEY": "c65fa24a-914a-4099-b335-4d7d958afb07",
   "PROJECT_NAME": "License Plate Recognition",
   "NAV_LOGO_BG_WHITE": false,
   "DETAIL_INFORMATION": {
