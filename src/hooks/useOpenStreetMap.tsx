@@ -4,9 +4,13 @@ import html2canvas from 'html2canvas';
 
 // Types
 import { MapConfig } from "../features/types";
-import { DEFAULT_MAP_CONFIG } from '../constants/map'
+import { DEFAULT_MAP_CONFIG } from '../constants/map';
+
+// Config
+import { getUrls } from '../config/runtimeConfig';
 
 export const useMap = (config: Partial<MapConfig> = {}) => {
+  const { VITE_OSM_API_KEY } = getUrls();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const mapInstance = useRef<LeafletMap | null>(null);
@@ -29,7 +33,7 @@ export const useMap = (config: Partial<MapConfig> = {}) => {
         config.zoom ?? DEFAULT_MAP_CONFIG.zoom
       );
 
-      L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}.png', {
+      L.tileLayer(`https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}.png?api_key=${VITE_OSM_API_KEY}`, {
         attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>',
         maxZoom: 19,
         crossOrigin: true,
