@@ -1827,21 +1827,23 @@ const SearchPlateWithCondition: React.FC<SearchPlateWithConditionProps> = ({}) =
         </div>
       </div>
       {/* Side Components */}
-      <InformationDetail 
-        open={isEditClick.status}
-        isCompare={isCompare}
-        selectedIdList={isCompare ? selectedCompareIdList : plateDetail}
-        tab={tab}
-        province={formData.province_code ? provincesOptions.find((p) => p.value === formData.province_code)?.label || "-" : t('dropdown.all')}
-        district={formData.district_code ? districtsOptions.find((p) => p.value === formData.district_code)?.label || "-" : t('dropdown.all')}
-        subDistrict={selectedSubDistrictObjects.length > 0 ? selectedSubDistrictObjects.map((s) => s.label).join(", ") : t('dropdown.all')}
-        onDataChange={onDataChange}
-        setSidePageLoading={setSidePageLoading}
-        setSideProgress={setSideProgress}
-        setSideProgressMessage={setSideProgressMessage}
-      />
-
-      
+      {
+        isEditClick.status && (
+          <InformationDetail 
+            open={isEditClick.status}
+            isCompare={isCompare}
+            selectedIdList={isCompare ? selectedCompareIdList : plateDetail}
+            tab={tab}
+            province={formData.province_code ? provincesOptions.find((p) => p.value === formData.province_code)?.label || "-" : t('dropdown.all')}
+            district={formData.district_code ? districtsOptions.find((p) => p.value === formData.district_code)?.label || "-" : t('dropdown.all')}
+            subDistrict={selectedSubDistrictObjects.length > 0 ? selectedSubDistrictObjects.map((s) => s.label).join(", ") : t('dropdown.all')}
+            onDataChange={onDataChange}
+            setSidePageLoading={setSidePageLoading}
+            setSideProgress={setSideProgress}
+            setSideProgressMessage={setSideProgressMessage}
+          />
+        )
+      }
 
       {/* Dialog */}
       <SearchCameras 

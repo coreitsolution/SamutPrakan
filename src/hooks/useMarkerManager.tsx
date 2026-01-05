@@ -36,7 +36,6 @@ export const useMarkerManager = (map: LeafletMap | null) => {
 
   const createMarker = (location: LatLngExpression, color: string = "#FF0000", isLocationWithLabel: boolean = false, markerTag: string = "") => {
     if (!map) return;
-    clearMarkers();
 
     const iconSVG = `
       <svg width="30px" height="40px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -69,7 +68,7 @@ export const useMarkerManager = (map: LeafletMap | null) => {
       createToolTip(marker, location, markerTag);
     }
 
-    setMarkers([marker]);
+    setMarkers(prev => [...prev, marker]);
   };
 
   const createMarkerWithList = (locations: {latLng: LatLngExpression, name: string}[], color: string = "#FF0000", isLocationWithLabel: boolean = false) => {

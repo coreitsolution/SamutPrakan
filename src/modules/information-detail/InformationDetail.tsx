@@ -163,8 +163,9 @@ const LocationDetail: React.FC<LocationDetailProps> = ({
       for (let i = 0; i < selectedIdList.length; i++) {
         const data = selectedIdList[i].plateRoute
         if (!data) continue;
+        if (data.length === 0) continue;
 
-        const routeList = data[i].routes.map((data: Route) => ({
+        const routeList = data[0].routes.map((data: Route) => ({
           lat: data.latitude,
           lon: data.longitude,
         }));

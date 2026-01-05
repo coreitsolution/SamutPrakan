@@ -61,6 +61,7 @@ export const isNumber = (value: string) => {
 }
 
 export const getFileNameWithoutExtension = (filePath: string): string => {
+  if (!filePath) return "";
   const fileName = filePath.split('/').pop()?.split('\\').pop() || ""
   return fileName.split('.').slice(0, -1).join('.') || fileName 
 }

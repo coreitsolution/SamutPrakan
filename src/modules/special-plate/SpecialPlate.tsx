@@ -295,7 +295,10 @@ const SpecialPlatePage: React.FC<SpecialPlateProps> = ({}) => {
       if (!confirmed) return;
 
       const imageResponse = await fetchClient<SpecialPlateFilesResponse>(combineURL(CENTER_API, `/special-plate-images/get`), {
-        method: "GET"
+        method: "GET",
+        queryParams: {
+          filter: `special_plate_uid=${uid}`
+        }
       })
 
       if (!imageResponse.success) {
@@ -314,7 +317,10 @@ const SpecialPlatePage: React.FC<SpecialPlateProps> = ({}) => {
       }
 
       const fileResponse = await fetchClient<SpecialPlateFilesResponse>(combineURL(CENTER_API, `/special-plate-files/get`), {
-        method: "GET"
+        method: "GET",
+        queryParams: {
+          filter: `special_plate_uid=${uid}`
+        }
       })
 
       if (!fileResponse.success) {
