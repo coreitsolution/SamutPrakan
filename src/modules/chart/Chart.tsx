@@ -631,7 +631,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
       { header: t('excel.column.total-volume'), key: "totalVolume", width: 20 },
     ];
 
-    const currentYear = dayjs();
+    const currentYear = formData.checkpointPassYearly ? dayjs(formData.checkpointPassYearly) : dayjs();
 
     sheet3.insertRow(1, [t('excel.year'), i18n.language === "th" ? currentYear.format('BBBB') : currentYear.format('YYYY'), '']);
 
@@ -652,8 +652,11 @@ const Chart: React.FC<ChartProps> = ({}) => {
       { header: t('excel.column.vehicle-volume'), key: "vehicleVolume", width: 10 },
     ];
 
-    const fromDateSheet4 = i18n.language === "th" ? dayjs().format("DD/MM/BBBB") : dayjs().format("DD/MM/YYYY");
-    const toDateSheet4 = i18n.language === "th" ? dayjs().format("DD/MM/BBBB") : dayjs().format("DD/MM/YYYY");
+    const weeklyStartDate = formData.checkpointPassWeeklyStart ? dayjs(formData.checkpointPassWeeklyStart) : dayjs();
+    const weeklyEndDate = formData.checkpointPassWeeklyEnd ? dayjs(formData.checkpointPassWeeklyEnd) : dayjs().add(1, "week");
+
+    const fromDateSheet4 = i18n.language === "th" ? weeklyStartDate.format("DD/MM/BBBB") : weeklyStartDate.format("DD/MM/YYYY");
+    const toDateSheet4 = i18n.language === "th" ? weeklyEndDate.format("DD/MM/BBBB") : weeklyEndDate.format("DD/MM/YYYY");
 
     sheet4.insertRow(1, [t('excel.data-from'), `${fromDateSheet4} - ${toDateSheet4}`, '']);
 
@@ -671,8 +674,11 @@ const Chart: React.FC<ChartProps> = ({}) => {
       { header: t('excel.column.vehicle-volume'), key: "vehicleVolume", width: 10 },
     ];
 
-    const fromDateSheet5 = i18n.language === "th" ? dayjs().format("DD/MM/BBBB") : dayjs().format("DD/MM/YYYY");
-    const toDateSheet5 = i18n.language === "th" ? dayjs().format("DD/MM/BBBB") : dayjs().format("DD/MM/YYYY");
+    const specialPlateStartDate = specialPlateData.specialPlateStart ? dayjs(specialPlateData.specialPlateStart) : dayjs();
+    const specialPlateEndDate = specialPlateData.specialPlateEnd ? dayjs(specialPlateData.specialPlateEnd) : dayjs();
+
+    const fromDateSheet5 = i18n.language === "th" ? specialPlateStartDate.format("DD/MM/BBBB") : specialPlateStartDate.format("DD/MM/YYYY");
+    const toDateSheet5 = i18n.language === "th" ? specialPlateEndDate.format("DD/MM/BBBB") : specialPlateEndDate.format("DD/MM/YYYY");
 
     sheet5.insertRow(1, [t('excel.data-from'), `${fromDateSheet5} - ${toDateSheet5}`, '']);
     

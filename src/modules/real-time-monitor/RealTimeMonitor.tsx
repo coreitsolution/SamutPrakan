@@ -81,7 +81,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 interface RealTimeMonitorProps {
-  // Empty props as per original code
+
 }
 
 const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
