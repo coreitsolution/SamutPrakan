@@ -212,7 +212,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
         checkpointPassWeeklyEnd: dayjs(value).add(1, "week").toDate(),
       }));
       setIsWeeklyChartLoading(true);
-      await fetchDetectionWeekly(selectCheckpoint);
+      await fetchDetectionWeekly(selectCheckpoint, value, dayjs(value).add(1, "week").toDate());
       setTimeout(() => {
         setIsWeeklyChartLoading(false);
       }, 500)
@@ -221,7 +221,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
     else if (key === "checkpointPassYearly" && value) {
       setFormData(prev => ({ ...prev, [key]: value }));
       setIsMonthlyChartLoading(true);
-      await fetchDetectionMonthly(selectCheckpoint);
+      await fetchDetectionMonthly(selectCheckpoint, value);
       setTimeout(() => {
         setIsMonthlyChartLoading(false);
       }, 500)
@@ -262,8 +262,8 @@ const Chart: React.FC<ChartProps> = ({}) => {
     try {
       setIsLoading(true);
       await fetchDetectionHourly(selectCheckpoint);
-      await fetchDetectionMonthly(selectCheckpoint);
-      await fetchDetectionWeekly(selectCheckpoint);
+      await fetchDetectionMonthly(selectCheckpoint, formData.checkpointPassYearly);
+      await fetchDetectionWeekly(selectCheckpoint, formData.checkpointPassWeeklyStart, formData.checkpointPassWeeklyEnd);
       await fetchDetectionSummary(selectCheckpoint);
       await fetchDetectionSpecialPlates(selectCheckpoint);
     }
@@ -340,7 +340,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
     }
   }
 
-  const fetchDetectionMonthly = async (selectCheckpoint: string[], date?: Date | null) => {
+  const fetchDetectionMonthly = async (selectCheckpoint: string[], date: Date | null) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
@@ -395,7 +395,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
     }
   }
 
-  const fetchDetectionWeekly = async (selectCheckpoint: string[], startDate?: Date | null, endDate?: Date | null) => {
+  const fetchDetectionWeekly = async (selectCheckpoint: string[], startDate: Date | null, endDate: Date | null) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
@@ -425,20 +425,41 @@ const Chart: React.FC<ChartProps> = ({}) => {
       });
 
       if (res.success) {
-        const updateData = res.data.map((data) => ({
-          dateFormat: i18n.language === "th" ? dayjs(data.date).locale("th").format('DD/MM/BBBB') : dayjs(data.date).format('DD/MM/YYYY'),
-          total_vehicle: data.count,
-          ...data,
-        }));
-        const finalData = Array.from({ length: 7}).map((_, index) => {
-          const dataWeekly = updateData.find(d => d.day_of_week === index);
-          if (dataWeekly) return dataWeekly;
-          return {
-            date: i18n.language === "th" ? dayjs(formData.checkpointPassWeeklyStart).add(index, "day").toISOString() : dayjs(formData.checkpointPassWeeklyStart).add(index, "day").toISOString(),
-            dateFormat: i18n.language === "th" ? dayjs(formData.checkpointPassWeeklyStart).add(index, "day").format('DD/MM/BBBB') : dayjs(formData.checkpointPassWeeklyStart).add(index, "day").format('DD/MM/YYYY'),
-            total_vehicle: 0,
+        const baseStart = startDate
+          ? dayjs(startDate).startOf("day")
+          : dayjs().startOf("day");
+
+        const dataMap = new Map(
+          res.data.map((item) => [dayjs(item.date).format("YYYY-MM-DD"), item])
+        );
+
+        const finalData = Array.from({ length: 8 }).map((_, index) => {
+          const currentDate = baseStart.add(index, "day");
+          const dateKey = currentDate.format("YYYY-MM-DD");
+          const matchedData = dataMap.get(dateKey);
+
+          const dateFormat = i18n.language === "th" 
+            ? currentDate.locale("th").format('DD/MM/BBBB') 
+            : currentDate.format('DD/MM/YYYY');
+
+          if (matchedData) {
+            return {
+              ...matchedData,
+              dateKey,
+              dateFormat,
+              total_vehicle: matchedData.count,
+            };
           }
-        })
+
+          return {
+            date: currentDate.toISOString(),
+            dateKey,
+            dateFormat,
+            total_vehicle: 0,
+            count: 0,
+          };
+        });
+
         setDetectionWeekly(finalData);
       }
     }
@@ -991,7 +1012,7 @@ const Chart: React.FC<ChartProps> = ({}) => {
                 <Typography variant="body1" color="#1A6DDF" className="font-semibold">{t('chart.special-plate')}</Typography>
               </div>
               <form onSubmit={handleSubmit(handleSpecialPlateChartSearch)} className='flex items-center justify-center mt-2'>
-                <div className='flex items-center justify-center w-[75%] gap-3'>
+                <div className='flex items-center justify-center w-[80%] gap-3'>
                   <DatePickerBuddhist 
                     value={specialPlateData.specialPlateStart} 
                     onChange={(e) => {
