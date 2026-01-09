@@ -23,7 +23,7 @@ const Image = forwardRef<HTMLImageElement, ImageProps>((
   const { t } = useTranslation();
 
   const [imageLoaded, setImageLoaded] = useState(false);
-  const fallbackImage = "/images/no_image.png";
+  const fallbackImage = "/images/no-image.png";
 
   const srcToUse = imageSrc?.trim() ? imageSrc : fallbackImage;
 

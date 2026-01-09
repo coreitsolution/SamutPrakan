@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface VideoPlayerProps {
   streamUrl: string | null;
@@ -7,14 +7,29 @@ interface VideoPlayerProps {
   isMjpeg?: boolean;
 }
 
+
+const FALLBACK_IMAGE = "/images/no-image.png";
+
 /* ---------------- MJPEG Player ---------------- */
 const MjpegPlayer = ({ streamUrl, customClass }: VideoPlayerProps) => {
+
+  const [src, setSrc] = useState(streamUrl || FALLBACK_IMAGE);
+
+  useEffect(() => {
+    setSrc(streamUrl || FALLBACK_IMAGE);
+  }, [streamUrl]);
+
   return (
-    <img
-      src={streamUrl || ""}
-      className={`w-full h-full object-cover ${customClass || ""}`}
-      alt="MJPEG Stream"
-    />
+    <div className={`overflow-hidden ${customClass || ""}`}>
+      <img
+        src={src}
+        className="w-full h-full object-cover"
+        alt="MJPEG Stream"
+        onError={() => {
+          if (src !== FALLBACK_IMAGE) setSrc(FALLBACK_IMAGE);
+        }}
+      />
+    </div>
   );
 };
 
@@ -22,12 +37,18 @@ const MjpegPlayer = ({ streamUrl, customClass }: VideoPlayerProps) => {
 const JSMpegPlayer = ({ streamUrl, id, customClass }: VideoPlayerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<any>(null);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     let canvas: HTMLCanvasElement | null = null;
 
     const setupPlayer = () => {
-      if (!containerRef.current || !streamUrl) return;
+      if (!containerRef.current || !streamUrl || !window.JSMpeg) {
+        setHasError(true);
+        return;
+      }
+
+      setHasError(false);
 
       if (playerRef.current) {
         try {
@@ -45,14 +66,15 @@ const JSMpegPlayer = ({ streamUrl, id, customClass }: VideoPlayerProps) => {
       containerRef.current.appendChild(canvas);
 
       try {
-        if (window.JSMpeg) {
-          playerRef.current = new window.JSMpeg.Player(streamUrl, {
-            canvas,
-            progressive: true,
-          });
-        }
-      } catch (error) {
+        playerRef.current = new window.JSMpeg.Player(streamUrl, {
+          canvas,
+          progressive: true,
+          onSourceError: () => setHasError(true),
+        });
+      } 
+      catch (error) {
         console.error("JSMpeg error:", error);
+        setHasError(true);
       }
     };
 
@@ -67,6 +89,16 @@ const JSMpegPlayer = ({ streamUrl, id, customClass }: VideoPlayerProps) => {
       if (canvas) canvas.remove();
     };
   }, [streamUrl, id]);
+
+  if (hasError) {
+    return (
+      <img
+        src={FALLBACK_IMAGE}
+        className={`w-full h-full object-cover ${customClass || ""}`}
+        alt="No Video"
+      />
+    );
+  }
 
   return (
     <div

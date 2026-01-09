@@ -35,6 +35,9 @@ import {
   // StartStopStream,
 } from "../../features/camera-settings/cameraSettingsTypes"
 import { 
+  CheckpointResponse,
+} from "../../features/checkpoint-settings/checkpointSettingsTypes";
+import { 
   LastRecognitionData, 
   RealTimeLprData, 
   LastRecognitionResult 
@@ -66,10 +69,6 @@ const CCTV = () => {
 
   const { cameraSettings } = useSelector(
     (state: RootState) => state.cameraSettings
-  )
-
-  const { settingDataShort } = useSelector(
-    (state: RootState) => state.settingsData
   )
 
   const [isFullWidth, setIsFullWidth] = useState(false)
@@ -107,9 +106,32 @@ const CCTV = () => {
   //   }
   // `;
 
+  useEffect(() => {
+    fetchCheckpointSetting();
+  }, [])
+
   useLayoutEffect(() => {
     setIsLoading(false)
   }, [])
+
+  const fetchCheckpointSetting = async () => {
+    try {
+      const response = await fetchClient<CheckpointResponse>(combineURL(API_URL, "/checkpoints/get"), {
+        method: "GET",
+      });
+
+      if (response.success && response.data.length > 0) {
+        const numValue = Number(response.data[0].live_view_count) || 1
+        setSelectedScreenValue(numValue)
+      } 
+      else {
+        setSelectedScreenValue(1);
+      }
+    }
+    catch (error) {
+      setSelectedScreenValue(1);
+    }
+  }
 
   const setUpdateLastRecognition = async (update: RealTimeLprData | null) => {
     if (update) {
@@ -278,13 +300,6 @@ const CCTV = () => {
       setCameraDetailSettingData(cameraSettings.data)
     }
   }, [cameraSettings])
-
-  useEffect(() => {
-    if (settingDataShort && settingDataShort.data) {
-      const numValue = Number(settingDataShort.data.live_view_count) || 1
-      setSelectedScreenValue(numValue)
-    }
-  }, [settingDataShort])
 
   return (
     <div className={`main-content pe-1 ${isOpen ? "pl-[130px]" : "pl-[2px]"} transition-all duration-500`}>
