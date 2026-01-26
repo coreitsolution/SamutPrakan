@@ -465,7 +465,7 @@ const CCTV = () => {
                 const liveViewWithLPR = cameraDetailSettingData
                   .slice(0, selectedScreenValue)
                   .map((live, index) => ({
-                    lprData: (activeStreamUrls[index] && activeStreamUrls[index].id && streamLPRMapping[activeStreamUrls[index].id]) || streamLPRMapping[live.alpr_camera_id] || null,
+                    lprData: (activeStreamUrls[index] && activeStreamUrls[index].id && streamLPRMapping[activeStreamUrls[index].id]) || streamLPRMapping[live.uid] || null,
                     isLPRIncluded: index < lprCount,
                   }));
 
@@ -508,16 +508,16 @@ const CCTV = () => {
                                     <Image
                                       imageSrc={`${IMAGE_URL}${lprData?.vehicle_image_url}`}
                                       imageAlt={`Car ${index + 1}`}
-                                      className="h-full w-[50%]"
+                                      className="h-[95%] w-full"
                                     />
                                     <Image
                                       imageSrc={`${IMAGE_URL}${lprData?.plate_image_url}`}
                                       imageAlt={`Plate ${index + 1}`}
-                                      className="h-[60%] w-[50%]"
+                                      className="h-[60%] w-full"
                                     />
                                   </div>
                                 </div>
-                                <div className="flex flex-col h-[114px] w-full text-center bg-tuna">
+                                <div className="flex flex-col h-[122px] w-full text-center bg-tuna">
                                   <p className="text-white text-[24px] font-medium">
                                     {`
                                       ${isNumber(lprData.plate_prefix) && isNumber(lprData.plate_number) ? 
@@ -551,12 +551,12 @@ const CCTV = () => {
                                     <Image
                                       imageSrc={`${IMAGE_URL}${streamLPRData?.vehicle_image_url}`}
                                       imageAlt={`Car ${index + 1}`}
-                                      className="h-full w-[50%]"
+                                      className="h-[95%] w-full"
                                     />
                                     <Image
                                       imageSrc={`${IMAGE_URL}${streamLPRData?.plate_image_url}`}
                                       imageAlt={`Plate ${index + 1}`}
-                                      className="h-[60%] w-[50%]"
+                                      className="h-[60%] w-full"
                                     />
                                   </div>
                                 </div>
