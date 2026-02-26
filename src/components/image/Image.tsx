@@ -8,6 +8,7 @@ interface ImageProps {
   imageAlt: string;
   className?: string;
   onLoad?: () => void;
+  backgroundColor?: string;
 }
 
 const Image = forwardRef<HTMLImageElement, ImageProps>((
@@ -15,7 +16,8 @@ const Image = forwardRef<HTMLImageElement, ImageProps>((
     imageSrc, 
     imageAlt, 
     className,
-    onLoad
+    onLoad,
+    backgroundColor = "#383A39"
   }, 
   ref
 ) => {
@@ -48,7 +50,7 @@ const Image = forwardRef<HTMLImageElement, ImageProps>((
   };
 
   return (
-    <div className="relative flex justify-center items-center" style={{ backgroundColor: "#383A39"}}>
+    <div className="relative flex justify-center items-center" style={{ backgroundColor }}>
       {!imageLoaded && (
         <span className="absolute text-[14px] text-white font-bold">
           {t('text.loading')}

@@ -73,6 +73,10 @@
     "all": "All",
     "center": "Center"
   },
+  "info": {
+    "forgot-password": "Forgot Password",
+    "contact-admin": "Please contact the administrator."
+  },
   "component": {
     "checkpoint-station": "Checkpoint / Checkpoint Name",
     "checkpoint": "Station",
@@ -292,6 +296,9 @@
     },
     "chart": {
       "title": "Statistical Data"
+    },
+    "realtime-setting": {
+      "title": "Setting"
     }
   },
   "feed-data": {
@@ -492,7 +499,12 @@
     "image-required": "Image is required",
     "start-from": "Start From",
     "list": "List",
-    "current-number-detections": "Current number of detections"
+    "current-number-detections": "Current number of detections",
+    "center": "Center",
+    "license-expire": "License Expire",
+    "unknown": "Unknown",
+    "loading-map": "Loading map...",
+    "no-camera": "No Camera"
   },
   "alert": {
     "save-success": "Changes saved successfully",
@@ -514,7 +526,9 @@
     "car-route": "Vehicle Route",
     "delete-camera-approve": "Delete Camera Approve",
     "active-camera": "Active Camera",
-    "camera-tab-width": "400px"
+    "camera-tab-width": "400px",
+    "camera-list": "Camera List",
+    "real-time-camera": "Real-Time Camera"
   },
   "message": {
     "error": {
@@ -533,7 +547,8 @@
       "restart-engine-error": "Restart Engine error: {{error}}",
       "setting-camera-error": "Cannot create camera settings: {{error}}",
       "user-password-invalid": "Invalid username and/or password!",
-      "error-while-download-file": "An error occurred while downloading file."
+      "error-while-download-file": "An error occurred while downloading file.",
+      "must-select-at-least-one-camera": "Please select at least one camera."
     },
     "success": {
       "save-success": "Save Successfully",
@@ -565,6 +580,9 @@
       "delete-approve": "Approve deletion of camera",
       "delete-unapprove": "Unapprove deletion of camera",
       "active-camera": "Bring the camera back to use"
+    },
+    "info": {
+      "can-not-select-camera-more-than-five": "Cannot select more than 5 cameras"
     }
   },
   "bread-crumb": {

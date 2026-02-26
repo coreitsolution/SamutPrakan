@@ -8,6 +8,7 @@ interface FeedCardProps {
 
 const FeedCard: React.FC<FeedCardProps> = ({ id, index, children }) => (
   <motion.div
+    layout="position"
     key={`data_${id}_${index}`}
     className='flex flex-col border border-[#CCD0CF]'
   >

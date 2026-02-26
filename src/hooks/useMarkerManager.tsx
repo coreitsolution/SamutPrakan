@@ -110,7 +110,10 @@ export const useMarkerManager = (map: LeafletMap | null) => {
     setMarkers(newMarkers);
   };
 
-  const createCheckpointMarker = (checkpoint: CheckpointOnMap) => {
+  const createCheckpointMarker = (
+    checkpoint: CheckpointOnMap,
+    onCheckpointSelect?: (uid: string) => void
+  ) => {
     if (!map) return;
 
     setMarkers(prevMarkers => {
@@ -157,7 +160,7 @@ export const useMarkerManager = (map: LeafletMap | null) => {
     if (checkpoint.isLocationWithLabel) {
       const latLng = L.latLng(checkpoint.location);
       createToolTip(marker, latLng, checkpoint.checkpointName);
-      createPopup(marker, latLng, checkpoint.checkpointName);
+      createPopupCheckpoint(marker, latLng, checkpoint, onCheckpointSelect);
     }
 
     setMarkers(prevMarkers => [...prevMarkers, marker]);
@@ -242,6 +245,66 @@ export const useMarkerManager = (map: LeafletMap | null) => {
       }
     );
   }
+
+  const createPopupCheckpoint = (
+    marker: L.Marker<any>,
+    latLng: LatLngExpression,
+    checkpoint: CheckpointOnMap,
+    onCheckpointSelect?: (uid: string) => void
+  ) => {
+    const newLatLng = L.latLng(latLng);
+    const popupId = `popup-video-${checkpoint.cameraUid}`;
+
+    marker.bindPopup(
+      `
+      <div style="width: 220px; text-align: center; position: relative;">
+        <div 
+          id="${popupId}"
+          style="
+            position: absolute;
+            top: 0;
+            right: 5px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            backgroundColor: #EEE;
+            border-radius: 5px;
+          "
+        >
+          <img
+            src="/icons/video.png"
+            style="width: 100%; height: 100%; object-fit: cover;"
+          />
+        </div>
+
+        <div style="font-weight: bold;">${checkpoint.checkpointName}</div>
+        <div style="font-size: 12px; color: #666;">
+          <a 
+            href="https://www.google.com/maps/search/?api=1&query=${newLatLng.lat},${newLatLng.lng}" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="popup-link"
+          >
+            ${newLatLng.lat.toFixed(5)}, ${newLatLng.lng.toFixed(5)}
+          </a>
+        </div>
+      </div>
+      `,
+      {
+        closeButton: true,
+        autoPan: true,
+      }
+    );
+
+    marker.on('popupopen', () => {
+      const el = document.getElementById(popupId);
+      if (!el) return;
+
+      el.onclick = () => {
+        onCheckpointSelect?.(checkpoint.cameraUid);
+      };
+    });
+  };
 
   const createPopup = (marker: L.Marker<any>, latLng: LatLngExpression, name: string | undefined) => {
     const newLatLng = L.latLng(latLng);

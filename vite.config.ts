@@ -20,6 +20,7 @@ export default defineConfig({
     }),
   ],
   define: {
-    __APP_VERSION__: JSON.stringify(pkg.version)
+    __APP_VERSION__: JSON.stringify(pkg.version),
+    CESIUM_BASE_URL: JSON.stringify("/cesium"),
   },
 })

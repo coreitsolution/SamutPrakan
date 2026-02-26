@@ -129,6 +129,14 @@ body .swal2-backdrop-show {
   background-color: #FFFFFF !important;
 }
 
+.real-time-camera-btn {
+  background-color: #FFFFFF !important;
+}
+
+.real-time-camera-btn:hover {
+  background-color: #CCC !important;
+}
+
 .leaflet-control-zoom.leaflet-bar {
   display: flex;
   flex-direction: row;
@@ -240,6 +248,28 @@ body .swal2-backdrop-show {
 
 .recharts-surface {
   outline: none !important;
+}
+
+#cesium-credits {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.realtime-setting:hover {
+  background-color: var(--primary-color) !important;
+}
+
+.list-item-btn {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+
+.list-item-btn:hover {
+  background-color: var(--primary-hover-color) !important;
+}
+
+.list-item-btn:disabled {
+  background-color: var(--primary-disable-color) !important;
 }
 
 @keyframes bellShake {

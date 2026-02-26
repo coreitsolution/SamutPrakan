@@ -18,7 +18,11 @@ import { getUrls } from '../config/runtimeConfig';
 import { MAP_PIN_ICON_COLOR } from '../constants/map';
 const COUNT_OVER = 1000;
 
-export const useMapSearch = (map: LeafletMap | null, ableToClick = false) => {
+export const useMapSearch = (
+  map: LeafletMap | null, 
+  ableToClick = false,
+  setSelectedCameraUid?: (uid: string) => void
+) => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
@@ -396,7 +400,11 @@ export const useMapSearch = (map: LeafletMap | null, ableToClick = false) => {
 
       await Promise.all(
         coordinatesList.map(cp =>
-          markerManager.createCheckpointMarker(cp)
+          markerManager.createCheckpointMarker(cp, (uid) => {
+            if (setSelectedCameraUid) {
+              setSelectedCameraUid?.(uid);
+            }
+          })
         )
       );
 

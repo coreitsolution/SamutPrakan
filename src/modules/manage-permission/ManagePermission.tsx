@@ -200,16 +200,16 @@ const ManagePermission: React.FC<ManagePermissionProps> = ({open, onClose, isCen
       name: t('text.cp-real-time'),
     },
     // suspiciousPersonManage: {
-    //   name: t('text.cp-special-plate-search'),
+    //   name: t('text.cp-suspicious-person-search'),
     // },
     // suspiciousPersonSearch: {
-    //   name: t('text.cp-special-plate-manage'),
+    //   name: t('text.cp-suspicious-person-manage'),
     // },
     specialPlateManage: {
-      name: t('text.cp-suspicious-person-search'),
+      name: t('text.cp-special-plate-search'),
     },
     specialPlateSearch: {
-      name: t('text.cp-suspicious-person-manage'),
+      name: t('text.cp-special-plate-manage'),
     },
     setting: {
       name: t('text.cp-setting'),

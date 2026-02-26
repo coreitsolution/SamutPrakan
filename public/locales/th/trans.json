@@ -73,6 +73,10 @@
     "all": "ทั้งหมด",
     "center": "Center"
   },
+  "info": {
+    "forgot-password": "ลืมรหัสผ่าน",
+    "contact-admin": "กรุณาติดต่อผู้ดูแลระบบ"
+  },
   "component": {
     "checkpoint-station": "จุดตรวจ/ชื่อด่าน",
     "checkpoint": "ด่าน",
@@ -292,6 +296,9 @@
     },
     "chart": {
       "title": "ข้อมูลสถิติ"
+    },
+    "realtime-setting": {
+      "title": "ตั้งค่า"
     }
   },
   "feed-data": {
@@ -492,7 +499,13 @@
     "image-required": "จำเป็นต้องมีรูปภาพ",
     "start-from": "เริ่มตั้งแต่",
     "list": "รายการ",
-    "current-number-detections": "จำนวนตรวจจับได้ ณ ปัจจุบัน"
+    "current-number-detections": "จำนวนตรวจจับได้ ณ ปัจจุบัน",
+    "center": "Center",
+    "license-expire": "License Expire",
+    "unknown": "ไม่ระบุ",
+    "loading-map": "กำลังโหลดแผนที่...",
+    "select-camera-list": "รายการกล้องที่ถูกเลือก",
+    "no-camera": "ไม่มีวิดีโอ"
   },
   "alert": {
     "save-success": "บันทึกการเปลี่ยนแปลงสำเร็จ",
@@ -514,7 +527,9 @@
     "car-route": "ข้อมูลขนส่ง",
     "delete-camera-approve": "อนุมัติลบกล้อง",
     "active-camera": "เปิดใช้กล้อง",
-    "camera-tab-width": "300px"
+    "camera-tab-width": "300px",
+    "camera-list": "รายการกล้อง",
+    "real-time-camera": "กล้อง Real-Time"
   },
   "message": {
     "error": {
@@ -533,7 +548,8 @@
       "restart-engine-error": "Restart Engine ผิดพลาด: {{error}}",
       "setting-camera-error": "ไม่สามารถสร้างการตั้งค่ากล้องได้: {{error}}",
       "user-password-invalid": "ชื่อผู้ใช้ และ/หรือ รหัสผ่านไม่ถูกต้อง!",
-      "error-while-download-file": "เกิดข้อผิดพลาดในการดาวน์โหลดไฟล์"
+      "error-while-download-file": "เกิดข้อผิดพลาดในการดาวน์โหลดไฟล์",
+      "must-select-at-least-one-camera": "กรุณาเลือกอย่างน้อย 1 ตัวกล้อง"
     },
     "success": {
       "save-success": "บันทึกข้อมูลสำเร็จ",
@@ -565,6 +581,10 @@
       "delete-approve": "อนุมัติลบกล้อง",
       "delete-unapprove": "ไม่อนุมัติลบกล้อง",
       "active-camera": "นำกล้องกลับมาใช้อีกครั้ง"
+    },
+    "info": {
+      "can-not-select-camera-more-than-five": "ไม่สามารถเลือกกล้องได้เกิน 5 ตัว",
+      "camera-limit-exceeded": "จำนวนกล้องเกินลิมิต"
     }
   },
   "bread-crumb": {

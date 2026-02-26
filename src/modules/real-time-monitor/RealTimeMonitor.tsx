@@ -30,6 +30,8 @@ import BaseMap from '../../components/base-map/BaseMap';
 import RealTimeToastify from '../../components/toastify/RealTimeToastify';
 import FeedCard from '../../components/feed-card/FeedCard';
 import FeedImages from '../../components/feed-images/FeedImages';
+import Scene from '../../components/scene/Scene';
+import Loading from "../../components/loading/Loading";
 
 // Types
 import {
@@ -100,6 +102,7 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
   const [cameraList, setCameraList] = useState<Camera[]>([])
   const [notificationList, setNotificationList] = useState<Map<string, NotificationList[]>>(new Map());
   const todayMidnight = dayjs().startOf('day');
+  const [selectedUid, setSelectedUid] = useState<string | null>(null);
 
   // State
   const [searchCheckpointsVisible, setSearchCheckpointsVisible] = useState(false);
@@ -107,6 +110,8 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
   const [isSearchClicked, setIsSearchClicked] = useState(true); 
   const [isShowLicensePlate, setIsShowLicensePlate] = useState(true);
   const [isShowFace, setIsShowFace] = useState(true);
+  const [isShowRealtimeCamera, setIsShowRealtimeCamera] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Options
   const [camerasOption, setCamerasOption] = useState<{value: any, label: string}[]>([]);
@@ -124,11 +129,16 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
   const { realtimeData } = useSelector((state: RootState) => state.realTimeData)
   const { vehicleCount } = useSelector((state: RootState) => state.vehicleCountData)
   
+  const handleSelectPoint = (uid: string) => {
+    setIsShowRealtimeCamera(true);
+    setSelectedUid(uid);
+  };
+
   const {
     searchSpecialCheckpoint,
     clearSearchPlaces,
     clearPlaceMarkerWithLocation,
-  } = useMapSearch(map);
+  } = useMapSearch(map, true, handleSelectPoint);
 
   useEffect(() => {
     return () => {
@@ -471,7 +481,7 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
     clearSearchPlaces();
     setIsSearchClicked(false); 
     setPrevCameraIds([]);
-    dispatch(setCameraSelected([]));
+    dispatch(setCameraSelected(cameraList.map((c) => c.uid)));
   };
 
   const handleMapLoad = useCallback((mapInstance: LeafletMap | null) => {
@@ -625,6 +635,7 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
 
   return (
     <div id="real-time-monitor" className={`main-content ${isOpen ? "pl-[130px]" : "pl-2.5"} pr-2.5 transition-all duration-500`}>
+      {isLoading && <Loading />}
       <div className='flex flex-col w-full h-full overflow-y-auto'>
         {/* Header */}
         <Typography variant="h5" color="white" className="font-bold">{t('screen.real-time.title')}</Typography>
@@ -760,6 +771,14 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
           <div id="realtime-map-container" className='relative h-[75.5vh] w-full'>
             <BaseMap 
               onMapLoad={handleMapLoad}
+              onRealtimeCameraChange={(open) => {
+                setIsLoading(true);
+                setSelectedUid(null);
+                setTimeout(() => {
+                  setIsShowRealtimeCamera(open);
+                }, 500);
+              }}
+              realtimeCamera={true}
             />
 
             {/* Toastify */}
@@ -771,7 +790,7 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
                 containerId="realtime-toast"
                 position="bottom-left"
                 hideProgressBar
-                newestOnTop={false}
+                newestOnTop={true}
                 closeOnClick={false}
                 rtl={false}
                 pauseOnFocusLoss
@@ -824,6 +843,19 @@ const RealTimeMonitor: React.FC<RealTimeMonitorProps> = () => {
           />
         )
       }
+
+      {
+        isShowRealtimeCamera && (
+          <Scene 
+            open={isShowRealtimeCamera} 
+            onClose={() => setIsShowRealtimeCamera(false)} 
+            cameraList={cameraList} 
+            setLoading={(e) => setIsLoading(e)}
+            selectedUid={selectedUid}
+          />
+        )
+      }
+
     </div>
   )
 }

@@ -27,6 +27,7 @@ export interface MapProps {
   streetViewControl?: boolean
   fullscreenControl?: boolean
   currentLocation?: boolean
+  realtimeCamera?: boolean
   onMapLoad?: (mapInstance: LeafletMap | null) => void
 }
 
@@ -527,6 +528,7 @@ export interface Camera {
   api_server_url: string
   live_server_url: string
   live_stream_url: string
+  mjpeg_stream_url: string
   serial_number: string | null
   license_key: string | null
   sample_image_url: string
@@ -544,6 +546,7 @@ export interface Camera {
   updated_at: string
   request_delete: boolean
   request_delete_reason: string | null
+  is_selected?: boolean;
 }
 
 export interface CameraResponse {

@@ -6,6 +6,8 @@ import { DatePickerProps } from '@mui/x-date-pickers/DatePicker'
 import { DateTimePicker, DateTimePickerProps } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers"
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateView } from '@mui/x-date-pickers/models';
+import { DateOrTimeView } from '@mui/x-date-pickers/models';
 
 // i18n
 import { useTranslation } from 'react-i18next';
@@ -47,6 +49,15 @@ const DatePickerBuddhist: React.FC<CustomDatePickerProps> = ({
 
   const dayjsValue = value ? dayjs(value) : null;
 
+  const dateViews: readonly DateView[] = ["year", "month", "day"];
+  const dateTimeViews: readonly DateOrTimeView[] = [
+    "year",
+    "month",
+    "day",
+    "hours",
+    "minutes",
+  ];
+  
   const handleDateChange = (date: dayjs.Dayjs | null, context: any) => {
     if (onChange) {
       onChange(date?.toDate() || null, context);
@@ -88,21 +99,19 @@ const DatePickerBuddhist: React.FC<CustomDatePickerProps> = ({
     },
   }
 
-  const datePickerProps = {
+  const commonProps = {
     value: dayjsValue,
     onChange: handleDateChange,
     slotProps: { 
       ...props.slotProps,
       textField: textFieldProps,
       toolbar: {
-        toolbarFormat: props.views?.includes("year") && props.views.length === 1
-                      ? "YYYY"
-                      : "D MMMM",
+        toolbarFormat:
+          isWithTime ? "D MMMM HH:mm" : "D MMMM",
       },
     },
     ...(maxDate && { maxDate }),
-    openTo: props.openTo || "day",
-    views: props.views ?? ["year", "month", "day"],
+    desktopModeMediaQuery: "@media (min-width: 0px)",
   };
 
   return (
@@ -120,22 +129,22 @@ const DatePickerBuddhist: React.FC<CustomDatePickerProps> = ({
         dateAdapter={i18n.language === "th" ? buddhistEraAdapter : AdapterDayjs} 
         adapterLocale={i18n.language === "th" ? "th" : "en"}
       >
-        {
-          !isWithTime ? 
-          (
-            <DatePicker
-              {...props}
-              {...datePickerProps}
-              desktopModeMediaQuery="@media (min-width: 0px)"
-            />
-          ) : 
-          (
-            <DateTimePicker
-              {...props as DateTimePickerProps<Dayjs>}
-              {...datePickerProps}
-              desktopModeMediaQuery="@media (min-width: 0px)"
-            />
-          )}
+        {!isWithTime ? (
+          <DatePicker
+            {...props}
+            {...commonProps}
+            views={props.views ?? dateViews}
+            openTo={props.openTo || "day"}
+          />
+        ) : (
+          <DateTimePicker
+            {...props as DateTimePickerProps<Dayjs>}
+            {...commonProps}
+            views={dateTimeViews}
+            openTo="day"
+            ampm={false}
+          />
+        )}
       </LocalizationProvider>
     </div>
   )

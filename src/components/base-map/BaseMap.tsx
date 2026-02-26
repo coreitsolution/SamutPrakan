@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, forwardRef, useImperativeHandle } from "react"
+import { useRef, useEffect, useState, forwardRef, useImperativeHandle, useCallback } from "react"
 
 // Material UI
 import IconButton from '@mui/material/IconButton';
@@ -10,18 +10,25 @@ import { useMap } from "../../hooks/useOpenStreetMap"
 
 // Components
 import Loading from "../../components/loading/Loading"
+import { Icon } from '../../components/icons/Icon'
 
 // Icons
 import CurrentLocation from "../../assets/icons/current-location.png";
+import { Cctv } from "lucide-react";
 
 // i18n
 import { useTranslation } from 'react-i18next';
 
 export interface BaseMapRef {
   captureMap: () => Promise<Blob | null>;
+  toggleRealtimeCamera: () => void;
 }
 
-const BaseMap = forwardRef<BaseMapRef, MapProps> (({
+interface ExtendedMapProps extends MapProps {
+  onRealtimeCameraChange?: (isOpen: boolean) => void;
+}
+
+const BaseMap = forwardRef<BaseMapRef, ExtendedMapProps> (({
   height = DEFAULT_DIMENSIONS.height,
   width = DEFAULT_DIMENSIONS.width,
   panControl = DEFAULT_MAP_CONFIG.panControl,
@@ -30,7 +37,9 @@ const BaseMap = forwardRef<BaseMapRef, MapProps> (({
   streetViewControl = DEFAULT_MAP_CONFIG.streetViewControl,
   fullscreenControl = DEFAULT_MAP_CONFIG.fullscreenControl,
   currentLocation = DEFAULT_MAP_CONFIG.currentLocation,
+  realtimeCamera = DEFAULT_MAP_CONFIG.realtimeCamera,
   onMapLoad,
+  onRealtimeCameraChange,
 }, ref) => {
   // i18n
   const { t } = useTranslation();
@@ -41,7 +50,7 @@ const BaseMap = forwardRef<BaseMapRef, MapProps> (({
     zoomControl: zoomControl, 
     mapTypeControl: mapTypeControl,
     streetViewControl: streetViewControl,
-    fullscreenControl: fullscreenControl, 
+    fullscreenControl: fullscreenControl
   })
   const [isFullScreen, setIsFullScreen] = useState(false)
 
@@ -66,8 +75,13 @@ const BaseMap = forwardRef<BaseMapRef, MapProps> (({
     }
   }, [mapInstance, onMapLoad])
 
+  const toggleRealtimeCamera = useCallback(() => {
+    onRealtimeCameraChange?.(true);
+  }, [onRealtimeCameraChange]);
+
   useImperativeHandle(ref, () => ({
     captureMap: async () => await handleCapture(),
+    toggleRealtimeCamera
   }));
 
   if (error) {
@@ -109,6 +123,24 @@ const BaseMap = forwardRef<BaseMapRef, MapProps> (({
             onClick={goToCurrentLocation}
           >
             <img src={CurrentLocation} alt='Current Location' className='w-5 h-5' />
+          </IconButton>
+        )
+      }
+
+      {
+        realtimeCamera && (
+          <IconButton 
+            className="real-time-camera-btn"
+            sx={{
+              borderRadius: "4px !important",
+              position: "absolute",
+              bottom: "10px",
+              right: "5px",
+              zIndex: 1000,
+            }}
+            onClick={toggleRealtimeCamera}
+          >
+            <Icon icon={Cctv} className="w-5 h-5" />
           </IconButton>
         )
       }
